@@ -31,6 +31,17 @@ public class VoxelGrid : MonoBehaviour
 		new Vector3(0, 1, 1), // 7
 	};
 
+	// Voxel face mappings
+	private static class FaceCorners
+	{
+		public static int[] Left = { 3, 7, 0, 4 };
+		public static int[] Right = { 1, 5, 2, 6 };
+		public static int[] Top = { 4, 7, 5, 6 };
+		public static int[] Bottom = { 3, 0, 2, 1 };
+		public static int[] Front = { 0, 4, 1, 5 };
+		public static int[] Back = { 2, 6, 3, 7 };
+	}
+
 	/* 
 	 * Cube front:
 	 * 4 ----- 5
@@ -48,10 +59,10 @@ public class VoxelGrid : MonoBehaviour
 	// Enum for determining quad side
 	private enum VoxelSide
 	{
-		Top,
-		Bottom,
 		Left,
 		Right,
+		Top,
+		Bottom,
 		Front,
 		Back
 	}
@@ -107,125 +118,62 @@ public class VoxelGrid : MonoBehaviour
 		Vector2 topStart = new Vector2(0.0f, 0.0f);
 		Vector2 bottomStart = new Vector2(0.5f, 0.0f);
 
+		// Placeholder variables
+		int[] faceCorners;
+		Vector2 uvStartCoordinate;
+
 		// Check which side
 		switch (side)
 		{
 			case VoxelSide.Left:
-				// Add vertices
-				vertices.AddRange(new Vector3[] {
-					position + cornerOffsets[3],
-					position + cornerOffsets[7],
-					position + cornerOffsets[0],
-					position + cornerOffsets[4],
-				});
-
-				// Add UV coordinates
-				uvCoordinates.AddRange(new Vector2[]{
-					sideStart,
-					sideStart + new Vector2(0.0f, 0.5f),
-					sideStart + new Vector2(0.5f, 0.0f),
-					sideStart + new Vector2(0.5f, 0.5f),
-				});
+				faceCorners = FaceCorners.Left;
+				uvStartCoordinate = sideStart;
 				break;
 
 			case VoxelSide.Right:
-				// Add vertices
-				vertices.AddRange(new Vector3[] {
-					position + cornerOffsets[1],
-					position + cornerOffsets[5],
-					position + cornerOffsets[2],
-					position + cornerOffsets[6],
-				});
-
-				// Add UV coordinates
-				uvCoordinates.AddRange(new Vector2[]{
-					sideStart,
-					sideStart + new Vector2(0.0f, 0.5f),
-					sideStart + new Vector2(0.5f, 0.0f),
-					sideStart + new Vector2(0.5f, 0.5f),
-				});
+				faceCorners = FaceCorners.Right;
+				uvStartCoordinate = sideStart;
 				break;
 
 			case VoxelSide.Top:
-				// Add vertices
-				vertices.AddRange(new Vector3[] {
-					position + cornerOffsets[4],
-					position + cornerOffsets[7],
-					position + cornerOffsets[5],
-					position + cornerOffsets[6],
-				});
-
-				// Add UV coordinates
-				uvCoordinates.AddRange(new Vector2[]{
-					topStart,
-					topStart + new Vector2(0.0f, 0.5f),
-					topStart + new Vector2(0.5f, 0.0f),
-					topStart + new Vector2(0.5f, 0.5f),
-				});
+				faceCorners = FaceCorners.Top;
+				uvStartCoordinate = topStart;
 				break;
 
 			case VoxelSide.Bottom:
-				// Add vertices
-				vertices.AddRange(new Vector3[] {
-					position + cornerOffsets[3],
-					position + cornerOffsets[0],
-					position + cornerOffsets[2],
-					position + cornerOffsets[1],
-				});
-
-				// Add UV coordinates
-				uvCoordinates.AddRange(new Vector2[]{
-					bottomStart,
-					bottomStart + new Vector2(0.0f, 0.5f),
-					bottomStart + new Vector2(0.5f, 0.0f),
-					bottomStart + new Vector2(0.5f, 0.5f),
-				});
+				faceCorners = FaceCorners.Bottom;
+				uvStartCoordinate = bottomStart;
 				break;
 
 			case VoxelSide.Front:
-				// Add vertices
-				vertices.AddRange(new Vector3[] {
-					position + cornerOffsets[0],
-					position + cornerOffsets[4],
-					position + cornerOffsets[1],
-					position + cornerOffsets[5],
-				});
-
-				// Add UV coordinates
-				uvCoordinates.AddRange(new Vector2[]{
-					sideStart,
-					sideStart + new Vector2(0.0f, 0.5f),
-					sideStart + new Vector2(0.5f, 0.0f),
-					sideStart + new Vector2(0.5f, 0.5f),
-				});
+				faceCorners = FaceCorners.Front;
+				uvStartCoordinate = sideStart;
 				break;
 
 			case VoxelSide.Back:
-				// Add vertices
-				vertices.AddRange(new Vector3[] {
-					position + cornerOffsets[2],
-					position + cornerOffsets[6],
-					position + cornerOffsets[3],
-					position + cornerOffsets[7],
-				});
-
-				// Add UV coordinates
-				uvCoordinates.AddRange(new Vector2[]{
-					sideStart,
-					sideStart + new Vector2(0.0f, 0.5f),
-					sideStart + new Vector2(0.5f, 0.0f),
-					sideStart + new Vector2(0.5f, 0.5f),
-				});
+				faceCorners = FaceCorners.Back;
+				uvStartCoordinate = sideStart;
 				break;
 
 			default: return;
 		}
 
+		// Add vertices
+		foreach (int corner in faceCorners) vertices.Add(position + cornerOffsets[corner]);
+
 		// Add triangles
 		triangles.AddRange(new int[]
 		{
-			vertexStartingIndex + 0, vertexStartingIndex + 1, vertexStartingIndex + 2,
-			vertexStartingIndex + 3, vertexStartingIndex + 2, vertexStartingIndex + 1
+			vertexStartingIndex + 0, vertexStartingIndex + 1, vertexStartingIndex + 2, // First triangle
+			vertexStartingIndex + 3, vertexStartingIndex + 2, vertexStartingIndex + 1 // Second triangle
+		});
+
+		// Add UV coordinates
+		uvCoordinates.AddRange(new Vector2[]{
+			uvStartCoordinate,
+			uvStartCoordinate + new Vector2(0.0f, 0.5f),
+			uvStartCoordinate + new Vector2(0.5f, 0.0f),
+			uvStartCoordinate + new Vector2(0.5f, 0.5f),
 		});
 	}
 

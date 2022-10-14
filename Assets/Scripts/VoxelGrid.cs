@@ -31,17 +31,6 @@ public class VoxelGrid : MonoBehaviour
 		new Vector3(0, 1, 1), // 7
 	};
 
-	// Voxel face mappings
-	private static class FaceCorners
-	{
-		public static int[] Left = { 3, 7, 0, 4 };
-		public static int[] Right = { 1, 5, 2, 6 };
-		public static int[] Top = { 4, 7, 5, 6 };
-		public static int[] Bottom = { 3, 0, 2, 1 };
-		public static int[] Front = { 0, 4, 1, 5 };
-		public static int[] Back = { 2, 6, 3, 7 };
-	}
-
 	/* 
 	 * Cube front:
 	 * 4 ----- 5
@@ -55,6 +44,17 @@ public class VoxelGrid : MonoBehaviour
 	 * |       |
 	 * 3 ----- 2
 	 */
+
+	// Voxel face mappings
+	private static class FaceCorners
+	{
+		public static int[] Left = { 3, 7, 0, 4 };
+		public static int[] Right = { 1, 5, 2, 6 };
+		public static int[] Top = { 4, 7, 5, 6 };
+		public static int[] Bottom = { 3, 0, 2, 1 };
+		public static int[] Front = { 0, 4, 1, 5 };
+		public static int[] Back = { 2, 6, 3, 7 };
+	}
 
 	// Enum for determining quad side
 	private enum VoxelSide

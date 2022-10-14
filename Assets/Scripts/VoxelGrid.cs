@@ -113,36 +113,36 @@ public class VoxelGrid : MonoBehaviour
 			case VoxelSide.Left:
 				// Add vertices
 				vertices.AddRange(new Vector3[] {
-					position + cornerOffsets[0],
 					position + cornerOffsets[3],
+					position + cornerOffsets[7],
+					position + cornerOffsets[0],
 					position + cornerOffsets[4],
-					position + cornerOffsets[7]
 				});
 
 				// Add UV coordinates
 				uvCoordinates.AddRange(new Vector2[]{
-					sideStart + new Vector2(0.0f, 0.5f),
-					sideStart + new Vector2(0.5f, 0.5f),
 					sideStart,
-					sideStart + new Vector2(0.5f, 0.0f)
+					sideStart + new Vector2(0.0f, 0.5f),
+					sideStart + new Vector2(0.5f, 0.0f),
+					sideStart + new Vector2(0.5f, 0.5f),
 				});
 				break;
 
 			case VoxelSide.Right:
 				// Add vertices
 				vertices.AddRange(new Vector3[] {
-					position + cornerOffsets[2],
 					position + cornerOffsets[1],
+					position + cornerOffsets[5],
+					position + cornerOffsets[2],
 					position + cornerOffsets[6],
-					position + cornerOffsets[5]
 				});
 
 				// Add UV coordinates
 				uvCoordinates.AddRange(new Vector2[]{
-					sideStart + new Vector2(0.0f, 0.5f),
-					sideStart + new Vector2(0.5f, 0.5f),
 					sideStart,
-					sideStart + new Vector2(0.5f, 0.0f)
+					sideStart + new Vector2(0.0f, 0.5f),
+					sideStart + new Vector2(0.5f, 0.0f),
+					sideStart + new Vector2(0.5f, 0.5f),
 				});
 				break;
 
@@ -152,34 +152,33 @@ public class VoxelGrid : MonoBehaviour
 					position + cornerOffsets[4],
 					position + cornerOffsets[7],
 					position + cornerOffsets[5],
-					position + cornerOffsets[6]
+					position + cornerOffsets[6],
 				});
 
 				// Add UV coordinates
 				uvCoordinates.AddRange(new Vector2[]{
-					topStart + new Vector2(0.0f, 0.5f),
-					topStart + new Vector2(0.5f, 0.5f),
 					topStart,
-					topStart + new Vector2(0.5f, 0.0f)
-					
+					topStart + new Vector2(0.0f, 0.5f),
+					topStart + new Vector2(0.5f, 0.0f),
+					topStart + new Vector2(0.5f, 0.5f),
 				});
 				break;
 
 			case VoxelSide.Bottom:
 				// Add vertices
 				vertices.AddRange(new Vector3[] {
-					position + cornerOffsets[2],
 					position + cornerOffsets[3],
+					position + cornerOffsets[0],
+					position + cornerOffsets[2],
 					position + cornerOffsets[1],
-					position + cornerOffsets[0]
 				});
 
 				// Add UV coordinates
 				uvCoordinates.AddRange(new Vector2[]{
-					bottomStart + new Vector2(0.0f, 0.5f),
-					bottomStart + new Vector2(0.5f, 0.5f),
 					bottomStart,
-					bottomStart + new Vector2(0.5f, 0.0f)
+					bottomStart + new Vector2(0.0f, 0.5f),
+					bottomStart + new Vector2(0.5f, 0.0f),
+					bottomStart + new Vector2(0.5f, 0.5f),
 				});
 				break;
 
@@ -189,19 +188,20 @@ public class VoxelGrid : MonoBehaviour
 					position + cornerOffsets[0],
 					position + cornerOffsets[4],
 					position + cornerOffsets[1],
-					position + cornerOffsets[5]
+					position + cornerOffsets[5],
 				});
 
 				// Add UV coordinates
 				uvCoordinates.AddRange(new Vector2[]{
-					sideStart + new Vector2(0.0f, 0.5f),
-					sideStart + new Vector2(0.5f, 0.5f),
 					sideStart,
-					sideStart + new Vector2(0.5f, 0.0f)
+					sideStart + new Vector2(0.0f, 0.5f),
+					sideStart + new Vector2(0.5f, 0.0f),
+					sideStart + new Vector2(0.5f, 0.5f),
 				});
 				break;
 
 			case VoxelSide.Back:
+				// Add vertices
 				vertices.AddRange(new Vector3[] {
 					position + cornerOffsets[2],
 					position + cornerOffsets[6],
@@ -211,10 +211,10 @@ public class VoxelGrid : MonoBehaviour
 
 				// Add UV coordinates
 				uvCoordinates.AddRange(new Vector2[]{
-					sideStart + new Vector2(0.0f, 0.5f),
-					sideStart + new Vector2(0.5f, 0.5f),
 					sideStart,
-					sideStart + new Vector2(0.5f, 0.0f)
+					sideStart + new Vector2(0.0f, 0.5f),
+					sideStart + new Vector2(0.5f, 0.0f),
+					sideStart + new Vector2(0.5f, 0.5f),
 				});
 				break;
 
@@ -225,7 +225,7 @@ public class VoxelGrid : MonoBehaviour
 		triangles.AddRange(new int[]
 		{
 			vertexStartingIndex + 0, vertexStartingIndex + 1, vertexStartingIndex + 2,
-			vertexStartingIndex + 1, vertexStartingIndex + 3, vertexStartingIndex + 2
+			vertexStartingIndex + 3, vertexStartingIndex + 2, vertexStartingIndex + 1
 		});
 	}
 

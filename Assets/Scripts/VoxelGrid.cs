@@ -5,13 +5,14 @@ using UnityEngine;
 
 // Generates a voxel terrain
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-public class TerrainGenerator : MonoBehaviour
+public class VoxelGrid : MonoBehaviour
 {
 	// Class variables
 	private Mesh mesh;
+	private Voxel[][][] voxels;
 	private List<Vector3> vertices = new List<Vector3>();
 	private List<int> triangles = new List<int>();
-	private Voxel[][][] voxelGrid;
+	private List<Vector2> uvCoordinates = new List<Vector2>();
 
 	// Class settings
 	public readonly static int Width = 16;
@@ -66,10 +67,10 @@ public class TerrainGenerator : MonoBehaviour
 		GetComponent<MeshFilter>().mesh = mesh;
 
 		// Add starter voxel
-		voxelGrid[0][0][0] = new Voxel(VoxelType.Blank);
-		voxelGrid[1][0][0] = new Voxel(VoxelType.Blank);
-		voxelGrid[0][0][1] = new Voxel(VoxelType.Blank);
-		voxelGrid[0][1][0] = new Voxel(VoxelType.Blank);
+		voxels[0][0][0] = new Voxel(VoxelType.Blank);
+		voxels[1][0][0] = new Voxel(VoxelType.Blank);
+		voxels[0][0][1] = new Voxel(VoxelType.Blank);
+		voxels[0][1][0] = new Voxel(VoxelType.Blank);
 
 		// Create terrain
 		GenerateTerrain();
@@ -80,16 +81,16 @@ public class TerrainGenerator : MonoBehaviour
 	private void NewGrid()
 	{
 		// Loop through all dimensions and create air voxels
-		voxelGrid = new Voxel[Width][][];
+		voxels = new Voxel[Width][][];
 		for (int x = 0; x < Width; x++)
 		{
-			voxelGrid[x] = new Voxel[Height][];
+			voxels[x] = new Voxel[Height][];
 			for (int y = 0; y < Height; y++)
 			{
-				voxelGrid[x][y] = new Voxel[Length];
+				voxels[x][y] = new Voxel[Length];
 				for (int z = 0; z < Length; z++)
 				{
-					voxelGrid[x][y][z] = new Voxel();
+					voxels[x][y][z] = new Voxel();
 				}
 			}
 		}
@@ -100,6 +101,11 @@ public class TerrainGenerator : MonoBehaviour
 	{
 		// Set up
 		int vertexStartingIndex = vertices.Count;
+
+		// Some TEMPORARY variables
+		Vector2 sideStart = new Vector2(0.5f, 0.5f);
+		Vector2 topStart = new Vector2(0.0f, 0.0f);
+		Vector2 bottomStart = new Vector2(0.5f, 0.0f);
 
 		// Check which side
 		switch (side)
@@ -112,6 +118,14 @@ public class TerrainGenerator : MonoBehaviour
 					position + cornerOffsets[4],
 					position + cornerOffsets[7]
 				});
+
+				// Add UV coordinates
+				uvCoordinates.AddRange(new Vector2[]{
+					sideStart + new Vector2(0.0f, 0.5f),
+					sideStart + new Vector2(0.5f, 0.5f),
+					sideStart,
+					sideStart + new Vector2(0.5f, 0.0f)
+				});
 				break;
 
 			case VoxelSide.Right:
@@ -121,6 +135,14 @@ public class TerrainGenerator : MonoBehaviour
 					position + cornerOffsets[1],
 					position + cornerOffsets[6],
 					position + cornerOffsets[5]
+				});
+
+				// Add UV coordinates
+				uvCoordinates.AddRange(new Vector2[]{
+					sideStart + new Vector2(0.0f, 0.5f),
+					sideStart + new Vector2(0.5f, 0.5f),
+					sideStart,
+					sideStart + new Vector2(0.5f, 0.0f)
 				});
 				break;
 
@@ -132,6 +154,15 @@ public class TerrainGenerator : MonoBehaviour
 					position + cornerOffsets[5],
 					position + cornerOffsets[6]
 				});
+
+				// Add UV coordinates
+				uvCoordinates.AddRange(new Vector2[]{
+					topStart + new Vector2(0.0f, 0.5f),
+					topStart + new Vector2(0.5f, 0.5f),
+					topStart,
+					topStart + new Vector2(0.5f, 0.0f)
+					
+				});
 				break;
 
 			case VoxelSide.Bottom:
@@ -141,6 +172,14 @@ public class TerrainGenerator : MonoBehaviour
 					position + cornerOffsets[3],
 					position + cornerOffsets[1],
 					position + cornerOffsets[0]
+				});
+
+				// Add UV coordinates
+				uvCoordinates.AddRange(new Vector2[]{
+					bottomStart + new Vector2(0.0f, 0.5f),
+					bottomStart + new Vector2(0.5f, 0.5f),
+					bottomStart,
+					bottomStart + new Vector2(0.5f, 0.0f)
 				});
 				break;
 
@@ -152,6 +191,14 @@ public class TerrainGenerator : MonoBehaviour
 					position + cornerOffsets[1],
 					position + cornerOffsets[5]
 				});
+
+				// Add UV coordinates
+				uvCoordinates.AddRange(new Vector2[]{
+					sideStart + new Vector2(0.0f, 0.5f),
+					sideStart + new Vector2(0.5f, 0.5f),
+					sideStart,
+					sideStart + new Vector2(0.5f, 0.0f)
+				});
 				break;
 
 			case VoxelSide.Back:
@@ -160,6 +207,14 @@ public class TerrainGenerator : MonoBehaviour
 					position + cornerOffsets[6],
 					position + cornerOffsets[3],
 					position + cornerOffsets[7],
+				});
+
+				// Add UV coordinates
+				uvCoordinates.AddRange(new Vector2[]{
+					sideStart + new Vector2(0.0f, 0.5f),
+					sideStart + new Vector2(0.5f, 0.5f),
+					sideStart,
+					sideStart + new Vector2(0.5f, 0.0f)
 				});
 				break;
 
@@ -185,18 +240,18 @@ public class TerrainGenerator : MonoBehaviour
 				for (int z = 0; z < Length; z++)
 				{
 					// If the voxel is air itself there is no reason to create a quad
-					if (voxelGrid[x][y][z].type == VoxelType.Air) continue;
+					if (voxels[x][y][z].type == VoxelType.Air) continue;
 
 					// Get voxel position
 					Vector3 voxelPosition = new Vector3(x, y, z);
 
 					// If there is air on a side of the voxel, place a quad
-					if (x - 1 < 0 || voxelGrid[x - 1][y][z].type == VoxelType.Air) AddQuad(voxelPosition, VoxelSide.Left);
-					if (x + 1 >= Width || voxelGrid[x + 1][y][z].type == VoxelType.Air) AddQuad(voxelPosition, VoxelSide.Right);
-					if (y + 1 >= Height || voxelGrid[x][y + 1][z].type == VoxelType.Air) AddQuad(voxelPosition, VoxelSide.Top);
-					if (y - 1 < 0 || voxelGrid[x][y - 1][z].type == VoxelType.Air) AddQuad(voxelPosition, VoxelSide.Bottom);
-					if (z - 1 < 0 || voxelGrid[x][y][z - 1].type == VoxelType.Air) AddQuad(voxelPosition, VoxelSide.Front);
-					if (z + 1 >= Length || voxelGrid[x][y][z + 1].type == VoxelType.Air) AddQuad(voxelPosition, VoxelSide.Back);
+					if (x - 1 < 0 || voxels[x - 1][y][z].type == VoxelType.Air) AddQuad(voxelPosition, VoxelSide.Left);
+					if (x + 1 >= Width || voxels[x + 1][y][z].type == VoxelType.Air) AddQuad(voxelPosition, VoxelSide.Right);
+					if (y + 1 >= Height || voxels[x][y + 1][z].type == VoxelType.Air) AddQuad(voxelPosition, VoxelSide.Top);
+					if (y - 1 < 0 || voxels[x][y - 1][z].type == VoxelType.Air) AddQuad(voxelPosition, VoxelSide.Bottom);
+					if (z - 1 < 0 || voxels[x][y][z - 1].type == VoxelType.Air) AddQuad(voxelPosition, VoxelSide.Front);
+					if (z + 1 >= Length || voxels[x][y][z + 1].type == VoxelType.Air) AddQuad(voxelPosition, VoxelSide.Back);
 				}
 			}
 		}
@@ -208,6 +263,7 @@ public class TerrainGenerator : MonoBehaviour
 		mesh.Clear();
 		mesh.vertices = vertices.ToArray();
 		mesh.triangles = triangles.ToArray();
+		mesh.uv = uvCoordinates.ToArray();
 		mesh.RecalculateNormals();
 	}
 }

@@ -403,6 +403,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3412cd3bc8d5ad34f861acd605b592ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  texturesBlockWidth: 8
+  voxelTextures:
+  - {fileID: 11400000, guid: 89d2be66fbb457f44a91a1a107fbea8f, type: 2}
+  - {fileID: 11400000, guid: c24bd0df3cc561944a1a0a62b80f83e8, type: 2}
+  - {fileID: 11400000, guid: 9134f1d82a171444c9e891ff8494f8a1, type: 2}
+  - {fileID: 11400000, guid: fd164dc7ce689034699ebc02987ee334, type: 2}
   cornerOffsets:
   - {x: 0, y: 0, z: 0}
   - {x: 1, y: 0, z: 0}
@@ -432,7 +438,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 43e1355bbe35f364da8fd8c767c80149, type: 2}
+  - {fileID: 2100000, guid: 3fcc66b1714f45b4c9fad7f5cf78e51d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -7,6 +7,10 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class VoxelGrid : MonoBehaviour
 {
+	// Inspector variables
+	public int texturesBlockWidth;
+	public TextureCoordinates[] voxelTextures;
+
 	// Class variables
 	private Mesh mesh;
 	private Voxel[][][] voxels;
@@ -20,7 +24,7 @@ public class VoxelGrid : MonoBehaviour
 	public readonly int Length = 32;
 
 	// Voxel corner positions
-	public Vector3[] cornerOffsets = {
+	[HideInInspector] public Vector3[] cornerOffsets = {
 		new Vector3(0, 0, 0), // 0
 		new Vector3(1, 0, 0), // 1
 		new Vector3(1, 0, 1), // 2
@@ -78,10 +82,13 @@ public class VoxelGrid : MonoBehaviour
 		GetComponent<MeshFilter>().mesh = mesh;
 
 		// Add starter voxel
-		voxels[0][0][0] = new Voxel(VoxelType.Blank);
-		voxels[1][0][0] = new Voxel(VoxelType.Blank);
-		voxels[0][0][1] = new Voxel(VoxelType.Blank);
-		voxels[0][1][0] = new Voxel(VoxelType.Blank);
+		voxels[0][0][0] = new Voxel(VoxelType.Blueprint);
+		voxels[1][0][0] = new Voxel(VoxelType.Blueprint);
+		voxels[0][0][1] = new Voxel(VoxelType.Blueprint);
+		voxels[0][1][0] = new Voxel(VoxelType.Blueprint);
+
+		voxels[2][0][2] = new Voxel(VoxelType.Dirt);
+		voxels[2][1][2] = new Voxel(VoxelType.Grass);
 
 		// Create terrain
 		GenerateTerrain();
@@ -108,51 +115,53 @@ public class VoxelGrid : MonoBehaviour
 	}
 
 	// Add a quad to the triangles and vertices
-	private void AddQuad(Vector3 position, VoxelSide side)
+	private void AddQuad(Voxel voxel, Vector3Int position, VoxelSide side)
 	{
 		// Set up
 		int vertexStartingIndex = vertices.Count;
 
-		// Some TEMPORARY variables
-		Vector2 sideStart = new Vector2(0.5f, 0.5f);
-		Vector2 topStart = new Vector2(0.0f, 0.0f);
-		Vector2 bottomStart = new Vector2(0.5f, 0.0f);
+		// Get the UV coordinates for each side of the voxel
+		int blockTypeIndex = voxel.typeIndex;
+		TextureCoordinates voxelTexture = voxelTextures[blockTypeIndex];
+		Vector2 uvSideCoordinates = (Vector2)voxelTexture.sideTextureCoordinates / texturesBlockWidth;
+		Vector2 uvTopCoordinates = (Vector2)voxelTexture.topTextureCoordinates / texturesBlockWidth;
+		Vector2 uvBottomCoordinates = (Vector2)voxelTexture.bottomTextureCoordinates / texturesBlockWidth;
 
 		// Placeholder variables
 		int[] faceCorners;
-		Vector2 uvStartCoordinate;
+		Vector2 uvStartCoordinates;
 
 		// Check which side
 		switch (side)
 		{
 			case VoxelSide.Left:
 				faceCorners = FaceCorners.Left;
-				uvStartCoordinate = sideStart;
+				uvStartCoordinates = uvSideCoordinates;
 				break;
 
 			case VoxelSide.Right:
 				faceCorners = FaceCorners.Right;
-				uvStartCoordinate = sideStart;
+				uvStartCoordinates = uvSideCoordinates;
 				break;
 
 			case VoxelSide.Top:
 				faceCorners = FaceCorners.Top;
-				uvStartCoordinate = topStart;
+				uvStartCoordinates = uvTopCoordinates;
 				break;
 
 			case VoxelSide.Bottom:
 				faceCorners = FaceCorners.Bottom;
-				uvStartCoordinate = bottomStart;
+				uvStartCoordinates = uvBottomCoordinates;
 				break;
 
 			case VoxelSide.Front:
 				faceCorners = FaceCorners.Front;
-				uvStartCoordinate = sideStart;
+				uvStartCoordinates = uvSideCoordinates;
 				break;
 
 			case VoxelSide.Back:
 				faceCorners = FaceCorners.Back;
-				uvStartCoordinate = sideStart;
+				uvStartCoordinates = uvSideCoordinates;
 				break;
 
 			default: return;
@@ -169,11 +178,12 @@ public class VoxelGrid : MonoBehaviour
 		});
 
 		// Add UV coordinates
+		float textureUnit = 1.0f / texturesBlockWidth;
 		uvCoordinates.AddRange(new Vector2[]{
-			uvStartCoordinate,
-			uvStartCoordinate + new Vector2(0.0f, 0.5f),
-			uvStartCoordinate + new Vector2(0.5f, 0.0f),
-			uvStartCoordinate + new Vector2(0.5f, 0.5f),
+			uvStartCoordinates,
+			uvStartCoordinates + new Vector2(0.0f, textureUnit),
+			uvStartCoordinates + new Vector2(textureUnit, 0.0f),
+			uvStartCoordinates + new Vector2(textureUnit, textureUnit),
 		});
 	}
 
@@ -187,19 +197,22 @@ public class VoxelGrid : MonoBehaviour
 			{
 				for (int z = 0; z < Length; z++)
 				{
+					// Get the voxel
+					Voxel voxel = voxels[x][y][z];
+
 					// If the voxel is air itself there is no reason to create a quad
-					if (voxels[x][y][z].type == VoxelType.Air) continue;
+					if (voxel.type == VoxelType.Air) continue;
 
 					// Get voxel position
-					Vector3 voxelPosition = new Vector3(x, y, z);
+					Vector3Int voxelPosition = new Vector3Int(x, y, z);
 
 					// If there is air on a side of the voxel, place a quad
-					if (x - 1 < 0 || voxels[x - 1][y][z].type == VoxelType.Air) AddQuad(voxelPosition, VoxelSide.Left);
-					if (x + 1 >= Width || voxels[x + 1][y][z].type == VoxelType.Air) AddQuad(voxelPosition, VoxelSide.Right);
-					if (y + 1 >= Height || voxels[x][y + 1][z].type == VoxelType.Air) AddQuad(voxelPosition, VoxelSide.Top);
-					if (y - 1 < 0 || voxels[x][y - 1][z].type == VoxelType.Air) AddQuad(voxelPosition, VoxelSide.Bottom);
-					if (z - 1 < 0 || voxels[x][y][z - 1].type == VoxelType.Air) AddQuad(voxelPosition, VoxelSide.Front);
-					if (z + 1 >= Length || voxels[x][y][z + 1].type == VoxelType.Air) AddQuad(voxelPosition, VoxelSide.Back);
+					if (x - 1 < 0 || voxels[x - 1][y][z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Left);
+					if (x + 1 >= Width || voxels[x + 1][y][z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Right);
+					if (y + 1 >= Height || voxels[x][y + 1][z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Top);
+					if (y - 1 < 0 || voxels[x][y - 1][z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Bottom);
+					if (z - 1 < 0 || voxels[x][y][z - 1].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Front);
+					if (z + 1 >= Length || voxels[x][y][z + 1].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Back);
 				}
 			}
 		}

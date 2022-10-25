@@ -79,6 +79,7 @@ public class VoxelGrid : MonoBehaviour
 
 		// Set mesh filter mesh
 		mesh = new Mesh();
+		mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32; // increases max vertex count
 		GetComponent<MeshFilter>().mesh = mesh;
 
 		// Add starter voxel
@@ -108,6 +109,7 @@ public class VoxelGrid : MonoBehaviour
 				voxels[x][y] = new Voxel[Length];
 				for (int z = 0; z < Length; z++)
 				{
+					
 					voxels[x][y][z] = new Voxel();
 				}
 			}

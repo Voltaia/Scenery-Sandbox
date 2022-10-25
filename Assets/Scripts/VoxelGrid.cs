@@ -15,12 +15,12 @@ public class VoxelGrid : MonoBehaviour
 	private List<Vector2> uvCoordinates = new List<Vector2>();
 
 	// Class settings
-	public readonly static int Width = 16;
-	public readonly static int Height = 16;
-	public readonly static int Length = 16;
+	public readonly int Width = 32;
+	public readonly int Height = 32;
+	public readonly int Length = 32;
 
 	// Voxel corner positions
-	private Vector3[] cornerOffsets = {
+	public Vector3[] cornerOffsets = {
 		new Vector3(0, 0, 0), // 0
 		new Vector3(1, 0, 0), // 1
 		new Vector3(1, 0, 1), // 2

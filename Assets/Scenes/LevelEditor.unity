@@ -200,14 +200,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
-  m_LocalPosition: {x: 0, y: 10, z: -10}
+  m_LocalRotation: {x: 0.35355338, y: 0.35355338, z: -0.1464466, w: 0.8535535}
+  m_LocalPosition: {x: -10, y: 50, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 45, y: 45, z: 0}
 --- !u!114 &330585547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -365,9 +365,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1712650645}
+  - component: {fileID: 1712650646}
+  - component: {fileID: 1712650650}
   - component: {fileID: 1712650648}
   - component: {fileID: 1712650647}
-  - component: {fileID: 1712650646}
   m_Layer: 0
   m_Name: Scenery
   m_TagString: Untagged
@@ -402,6 +403,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3412cd3bc8d5ad34f861acd605b592ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cornerOffsets:
+  - {x: 0, y: 0, z: 0}
+  - {x: 1, y: 0, z: 0}
+  - {x: 1, y: 0, z: 1}
+  - {x: 0, y: 0, z: 1}
+  - {x: 0, y: 1, z: 0}
+  - {x: 1, y: 1, z: 0}
+  - {x: 1, y: 1, z: 1}
+  - {x: 0, y: 1, z: 1}
 --- !u!23 &1712650647
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -452,3 +462,16 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1712650644}
   m_Mesh: {fileID: 0}
+--- !u!114 &1712650650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1712650644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0352faecc49bb4546b791fab373fe277, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: 7c14bcebda1d2a842919e7a4c1d28dbd, type: 2}

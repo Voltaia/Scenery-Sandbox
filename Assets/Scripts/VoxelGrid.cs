@@ -72,7 +72,7 @@ public class VoxelGrid : MonoBehaviour
 	}
 
 	// Start is called before the first frame update
-	private void Start()
+	private void Awake()
 	{
 		// Initialize voxel grid
 		NewGrid();
@@ -82,7 +82,7 @@ public class VoxelGrid : MonoBehaviour
 		mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32; // increases max vertex count
 		GetComponent<MeshFilter>().mesh = mesh;
 
-		// Add starter voxel
+		// Add starter voxels
 		voxels[0][0][0] = new Voxel(VoxelType.Blueprint);
 		voxels[1][0][0] = new Voxel(VoxelType.Blueprint);
 		voxels[0][0][1] = new Voxel(VoxelType.Blueprint);
@@ -91,13 +91,12 @@ public class VoxelGrid : MonoBehaviour
 		voxels[2][0][2] = new Voxel(VoxelType.Dirt);
 		voxels[2][1][2] = new Voxel(VoxelType.Grass);
 
-		// Create terrain
-		GenerateTerrain();
-		RefreshTerrain();
+		// Create mesh
+		GenerateMesh();
 	}
 
 	// Create a new, empty grid
-	private void NewGrid()
+	public void NewGrid()
 	{
 		// Loop through all dimensions and create air voxels
 		voxels = new Voxel[Width][][];
@@ -109,11 +108,66 @@ public class VoxelGrid : MonoBehaviour
 				voxels[x][y] = new Voxel[Length];
 				for (int z = 0; z < Length; z++)
 				{
-					
+
 					voxels[x][y][z] = new Voxel();
 				}
 			}
 		}
+	}
+
+	// Add a new voxel
+	public void AddVoxel(Vector3Int position, Voxel voxel)
+	{
+		voxels[position.x][position.y][position.z] = voxel;
+	}
+
+	// Generate the mesh
+	public void GenerateMesh()
+	{
+		// Empty some variables
+		vertices.Clear();
+		triangles.Clear();
+		uvCoordinates.Clear();
+
+		// Loop through all dimensions
+		for (int x = 0; x < Width; x++)
+		{
+			for (int y = 0; y < Height; y++)
+			{
+				for (int z = 0; z < Length; z++)
+				{
+					// Get the voxel
+					Voxel voxel = voxels[x][y][z];
+
+					// If the voxel is air itself there is no reason to create a quad
+					if (voxel.type == VoxelType.Air) continue;
+
+					// Get voxel position
+					Vector3Int voxelPosition = new Vector3Int(x, y, z);
+
+					// If there is air on a side of the voxel, place a quad
+					if (x - 1 < 0 || voxels[x - 1][y][z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Left);
+					if (x + 1 >= Width || voxels[x + 1][y][z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Right);
+					if (y + 1 >= Height || voxels[x][y + 1][z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Top);
+					if (y - 1 < 0 || voxels[x][y - 1][z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Bottom);
+					if (z - 1 < 0 || voxels[x][y][z - 1].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Front);
+					if (z + 1 >= Length || voxels[x][y][z + 1].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Back);
+				}
+			}
+		}
+
+		// Apply changes
+		RefreshMesh();
+	}
+
+	// Refresh the mesh
+	private void RefreshMesh()
+	{
+		mesh.Clear();
+		mesh.vertices = vertices.ToArray();
+		mesh.triangles = triangles.ToArray();
+		mesh.uv = uvCoordinates.ToArray();
+		mesh.RecalculateNormals();
 	}
 
 	// Add a quad to the triangles and vertices
@@ -187,46 +241,5 @@ public class VoxelGrid : MonoBehaviour
 			uvStartCoordinates + new Vector2(textureUnit, 0.0f),
 			uvStartCoordinates + new Vector2(textureUnit, textureUnit),
 		});
-	}
-
-	// Generate the mesh
-	private void GenerateTerrain()
-	{
-		// Loop through all dimensions
-		for (int x = 0; x < Width; x++)
-		{
-			for (int y = 0; y < Height; y++)
-			{
-				for (int z = 0; z < Length; z++)
-				{
-					// Get the voxel
-					Voxel voxel = voxels[x][y][z];
-
-					// If the voxel is air itself there is no reason to create a quad
-					if (voxel.type == VoxelType.Air) continue;
-
-					// Get voxel position
-					Vector3Int voxelPosition = new Vector3Int(x, y, z);
-
-					// If there is air on a side of the voxel, place a quad
-					if (x - 1 < 0 || voxels[x - 1][y][z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Left);
-					if (x + 1 >= Width || voxels[x + 1][y][z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Right);
-					if (y + 1 >= Height || voxels[x][y + 1][z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Top);
-					if (y - 1 < 0 || voxels[x][y - 1][z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Bottom);
-					if (z - 1 < 0 || voxels[x][y][z - 1].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Front);
-					if (z + 1 >= Length || voxels[x][y][z + 1].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Back);
-				}
-			}
-		}
-	}
-
-	// Refresh the mesh
-	private void RefreshTerrain()
-	{
-		mesh.Clear();
-		mesh.vertices = vertices.ToArray();
-		mesh.triangles = triangles.ToArray();
-		mesh.uv = uvCoordinates.ToArray();
-		mesh.RecalculateNormals();
 	}
 }

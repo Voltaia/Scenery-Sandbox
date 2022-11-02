@@ -367,7 +367,9 @@ GameObject:
   - component: {fileID: 1712650645}
   - component: {fileID: 1712650646}
   - component: {fileID: 1712650650}
-  - component: {fileID: 1712650648}
+  - component: {fileID: 1712650653}
+  - component: {fileID: 1712650654}
+  - component: {fileID: 1712650652}
   - component: {fileID: 1712650647}
   m_Layer: 0
   m_Name: Scenery
@@ -460,14 +462,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &1712650648
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1712650644}
-  m_Mesh: {fileID: 0}
 --- !u!114 &1712650650
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -481,3 +475,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 7c14bcebda1d2a842919e7a4c1d28dbd, type: 2}
+--- !u!33 &1712650652
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1712650644}
+  m_Mesh: {fileID: 0}
+--- !u!114 &1712650653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1712650644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2f257e21188d1b43b74b281fe6eefc4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1712650654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1712650644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2f257e21188d1b43b74b281fe6eefc4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

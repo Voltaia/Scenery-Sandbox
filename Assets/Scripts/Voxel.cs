@@ -4,7 +4,9 @@ public enum VoxelType
 	Air,
 	Blueprint,
 	Grass,
+	DripGrass,
 	Dirt,
+	Stone,
 }
 
 // A pretty cube

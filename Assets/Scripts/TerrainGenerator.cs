@@ -4,25 +4,22 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Generates a terrain
-[RequireComponent(typeof(VoxelGrid))]
-public class TerrainGenerator : MonoBehaviour
+public class TerrainGenerator
 {
-	// Inspector variables
-	public bool generateNew;
-
 	// Class variables
 	private VoxelGrid voxelGrid;
 	private List<Layer> layers = new List<Layer> { new Layer(VoxelType.Blueprint, 64) };
 
 	// Class settings
-	private const int surfaceVariation = 10;
-	private const int surfaceStartHeight = 16;
+	public int surfaceVariation = 10;
+	public int surfaceStartHeight = 10;
 
-	// Start is called before the first frame update
-	private void Start()
+	// Constructor
+	public TerrainGenerator(VoxelGrid voxelGrid, List<Layer> layers)
 	{
-		// Get components
-		voxelGrid = GetComponent<VoxelGrid>();
+		// Fill in variables
+		this.voxelGrid = voxelGrid;
+		this.layers = layers;
 
 		// Temporary layer settings
 		layers.Clear();
@@ -31,25 +28,9 @@ public class TerrainGenerator : MonoBehaviour
 		layers.Add(new Layer(VoxelType.Stone, 64));
 	}
 
-	// Called every frame
-	private void Update()
-	{
-		if (generateNew)
-		{
-			generateNew = false;
-			Generate();
-		}
-	}
-
 	// Generate a new terrain
-	public void Generate()
+	public void WriteTerrain(int seed)
 	{
-		// Wipe voxel grid
-		voxelGrid.NewGrid();
-
-		// Generate a seed
-		int seed = Random.Range(0, 999);
-
 		// Loop through X and Z coordinates
 		for (int x = 0; x < voxelGrid.Width; x++)
 		{
@@ -86,13 +67,10 @@ public class TerrainGenerator : MonoBehaviour
 				}
 			}
 		}
-
-		// Apply changes
-		voxelGrid.GenerateMesh();
 	}
 
 	// Layer properties
-	private struct Layer
+	public struct Layer
 	{
 		// Struct variables
 		public VoxelType voxelType;

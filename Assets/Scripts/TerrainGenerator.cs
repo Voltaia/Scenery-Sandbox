@@ -15,11 +15,10 @@ public class TerrainGenerator
 	public int surfaceStartHeight = 10;
 
 	// Constructor
-	public TerrainGenerator(VoxelGrid voxelGrid, List<Layer> layers)
+	public TerrainGenerator(VoxelGrid voxelGrid)
 	{
 		// Fill in variables
 		this.voxelGrid = voxelGrid;
-		this.layers = layers;
 
 		// Temporary layer settings
 		layers.Clear();
@@ -40,7 +39,7 @@ public class TerrainGenerator
 				float perlinX = ((float)x / voxelGrid.Width) * (seed / 1000.0f);
 				float perlinY = ((float)z / voxelGrid.Length) * (seed / 1000.0f);
 				int y = surfaceStartHeight + (int)(Mathf.PerlinNoise(perlinX, perlinY) * surfaceVariation * 2);
-				voxelGrid.AddVoxel(new Vector3Int(x, y, z), new Voxel(layers[0].voxelType));
+				voxelGrid.SetVoxel(new Vector3Int(x, y, z), new Voxel(layers[0].voxelType));
 
 				// Set some things up for depth
 				int depth = 1;
@@ -59,7 +58,7 @@ public class TerrainGenerator
 					}
 
 					// Add voxel and move to next level
-					voxelGrid.AddVoxel(
+					voxelGrid.SetVoxel(
 						new Vector3Int(x, y, z),
 						new Voxel(layers[layerIndex].voxelType)
 					);

@@ -116,8 +116,16 @@ public class VoxelGrid : MonoBehaviour
 	}
 
 	// Add a new voxel
-	public void AddVoxel(Vector3Int position, Voxel voxel)
+	public void SetVoxel(Vector3Int position, Voxel voxel)
 	{
+		// Exit if voxel is out of bounds
+		if (
+			position.x < 0 || position.x >= Width
+			|| position.y < 0 || position.y >= Height
+			|| position.z < 0 || position.z >= Length
+		) return;
+
+		// Add voxel
 		voxels[position.x][position.y][position.z] = voxel;
 	}
 

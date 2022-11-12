@@ -8,27 +8,41 @@ using UnityEngine;
 public class SceneryGenerator : MonoBehaviour
 {
 	// Inspector variables
-	public bool generateNew;
+	[Header("Generation")]
+	public bool generateNew = true;
+	public bool randomizeSeed = true;
+	public int seed;
+
+	[Header("Options")]
+	public bool generateTerrain = true;
+	public bool generateCaves = true;
 
 	// Class variables
 	private VoxelGrid voxelGrid;
 	private TerrainGenerator terrainGenerator;
+	private CaveGenerator caveGenerator;
 
 	// Start is called before the first frame update
 	private void Start()
 	{
 		// Fill in variables
 		voxelGrid = GetComponent<VoxelGrid>();
-		terrainGenerator = new TerrainGenerator(voxelGrid, new List<TerrainGenerator.Layer>());
+		terrainGenerator = new TerrainGenerator(voxelGrid);
+		caveGenerator = new CaveGenerator(voxelGrid);
 	}
 
 	// Called every frame
 	private void Update()
 	{
+		// Check if we're meant to generate a new scenery this frame
 		if (generateNew)
 		{
-			generateNew = false;
+			// Generate a new scenery
+			if (randomizeSeed) RandomizeSeed();
 			Generate();
+
+			// Disable for next frame
+			generateNew = false;
 		}
 	}
 
@@ -38,13 +52,17 @@ public class SceneryGenerator : MonoBehaviour
 		// Wipe voxel grid
 		voxelGrid.NewGrid();
 
-		// Generate a seed
-		int seed = Random.Range(0, 999);
-
 		// Make changes to voxel grid
-		terrainGenerator.WriteTerrain(seed);
+		if (generateTerrain) terrainGenerator.WriteTerrain(seed);
+		if (generateCaves) caveGenerator.WriteCaves(seed);
 
 		// Apply changes
 		voxelGrid.GenerateMesh();
+	}
+
+	// Randomize seed
+	private void RandomizeSeed()
+	{
+		seed = Random.Range(0, 999);
 	}
 }

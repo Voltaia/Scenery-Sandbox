@@ -201,8 +201,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_LocalRotation: {x: -0.15008135, y: 0.82201004, z: -0.2530066, w: -0.4876093}
-  m_LocalPosition: {x: 59.879128, y: 50, z: 39.97128}
+  m_LocalRotation: {x: -0.22996521, y: 0.7677378, z: -0.3876745, w: -0.45541543}
+  m_LocalPosition: {x: 63.491215, y: 85, z: 45.57415}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -254,8 +254,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83943238cfd311445b30955d2df8a17d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  height: 50
-  radius: 50
+  height: 85
+  radius: 45
   orbitAmount: 0.5
 --- !u!1 &410087039
 GameObject:
@@ -513,3 +513,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generateNew: 1
+  randomizeSeed: 1
+  seed: 0
+  generateTerrain: 1
+  generateCaves: 1

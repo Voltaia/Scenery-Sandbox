@@ -8,6 +8,13 @@ public class CaveGenerator
 	// Class variables
 	private VoxelGrid voxelGrid;
 
+	// Class settings
+	private const float ForkChance = 0.025f;
+	private const float MaxCurve = 5.0f;
+	private const int Radius = 3;
+	private const int MinimumCaves = 1;
+	private const int MaximumCaves = 3;
+
 	// Constructor
 	public CaveGenerator(VoxelGrid voxelGrid)
 	{
@@ -20,7 +27,7 @@ public class CaveGenerator
 	{
 		// Get random values
 		Random.InitState(seed);
-		int caves = Random.Range(1, 5);
+		int caves = Random.Range(MinimumCaves, MaximumCaves);
 
 		// Loop through caves
 		for (int cave = 1; cave <= caves; cave++)
@@ -49,19 +56,37 @@ public class CaveGenerator
 	{
 		// Get some random variables
 		int length = Random.Range(voxelGrid.Width / 2, voxelGrid.Width);
-		Vector3 curve = new Vector3(
-			Random.Range(-0.1f, 0.1f),
-			Random.Range(-0.1f, 0.1f),
-			Random.Range(-0.1f, 0.1f)
+		Vector3 curveDirection = new Vector3(
+			Random.Range(-1.0f, 1.0f),
+			Random.Range(-1.0f, 1.0f),
+			Random.Range(-1.0f, 1.0f)
 		).normalized;
+		float curveAmount = Random.Range(-MaxCurve, MaxCurve);
 
 		// Loop through length
 		for (int currentLength = 0; currentLength < length; currentLength++)
 		{
-			voxelGrid.WriteSphere(VectorFloatToInt(startPosition), 3, new Voxel());
+			// Convert float vector to int vector
+			Vector3Int gridPosition = VectorFloatToInt(startPosition);
+
+			// Quit creating cave if it has wondered out of bounds
+			if (voxelGrid.IsOutOfBounds(gridPosition)) return;
+
+			// Bore segment of cave
+			voxelGrid.WriteSphere(gridPosition, Radius, new Voxel());
+
+			// Change cave position
 			startPosition += direction;
-			direction += curve;
-			direction.Normalize();
+			direction = Quaternion.AngleAxis(curveAmount, curveDirection) * direction;
+
+			// Split cave
+			if (Random.Range(0.0f, 1.0f) < ForkChance)
+			{
+				// Get a direction for the new cave and generate it
+				float forkAngle = Random.Range(0.0f, 1.0f) < 0.5f ? -90.0f : 90.0f;
+				Vector3 forkDirection = Quaternion.AngleAxis(forkAngle, Vector3.up) * direction;
+				WriteCave(startPosition, forkDirection);
+			}
 		}
 	}
 

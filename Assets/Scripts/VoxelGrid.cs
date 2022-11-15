@@ -19,9 +19,9 @@ public class VoxelGrid : MonoBehaviour
 	private List<Vector2> uvCoordinates = new List<Vector2>();
 
 	// Class settings
-	public readonly int Width = 32;
-	public readonly int Height = 32;
-	public readonly int Length = 32;
+	public readonly int Width = 48;
+	public readonly int Height = 48;
+	public readonly int Length = 48;
 
 	// Voxel corner positions
 	[HideInInspector] public Vector3[] cornerOffsets = {
@@ -118,9 +118,6 @@ public class VoxelGrid : MonoBehaviour
 	// Write a voxel
 	public void WriteVoxel(Vector3Int position, Voxel voxel)
 	{
-		// Exit if voxel is out of bounds
-		if (IsOutOfBounds(position)) return;
-
 		// Add voxel
 		voxels[position.x][position.y][position.z] = voxel;
 	}
@@ -135,10 +132,14 @@ public class VoxelGrid : MonoBehaviour
 			{
 				for (int z = centerPosition.z - radiusPlus; z <= centerPosition.z + radiusPlus; z++)
 				{
-					// Check distance
+					// Create vector for position
 					Vector3Int currentPosition = new Vector3Int(x, y, z);
-					if (Vector3Int.Distance(centerPosition, currentPosition) < radiusPlus)
-						WriteVoxel(currentPosition, voxel);
+
+					// Check distance and write if within radius
+					if (
+						!IsOutOfBounds(currentPosition)
+						&& Vector3Int.Distance(centerPosition, currentPosition) < radiusPlus
+					) WriteVoxel(currentPosition, voxel);
 				}
 			}
 		}

@@ -11,8 +11,8 @@ public class TerrainGenerator
 	private List<Layer> layers = new List<Layer> { new Layer(VoxelType.Blueprint, 64) };
 
 	// Class settings
-	public int surfaceVariation = 10;
-	public int surfaceStartHeight = 10;
+	private const int SurfaceVariation = 10;
+	private const int SurfaceStartHeight = 24;
 
 	// Constructor
 	public TerrainGenerator(VoxelGrid voxelGrid)
@@ -38,7 +38,7 @@ public class TerrainGenerator
 				// Generate height using perlin noise
 				float perlinX = ((float)x / voxelGrid.Width) * (seed / 1000.0f);
 				float perlinY = ((float)z / voxelGrid.Length) * (seed / 1000.0f);
-				int y = surfaceStartHeight + (int)(Mathf.PerlinNoise(perlinX, perlinY) * surfaceVariation * 2);
+				int y = SurfaceStartHeight + (int)(Mathf.PerlinNoise(perlinX, perlinY) * SurfaceVariation * 2);
 				voxelGrid.WriteVoxel(new Vector3Int(x, y, z), new Voxel(layers[0].voxelType));
 
 				// Set some things up for depth

@@ -37,7 +37,7 @@ public class CaveGenerator
 				Random.Range(-1.0f, 1.0f),
 				Random.Range(-1.0f, 1.0f),
 				Random.Range(-1.0f, 1.0f)
-			);
+			).normalized;
 
 			// Write cave
 			WriteCave(startPosition, direction);
@@ -53,7 +53,7 @@ public class CaveGenerator
 			Random.Range(-0.1f, 0.1f),
 			Random.Range(-0.1f, 0.1f),
 			Random.Range(-0.1f, 0.1f)
-		);
+		).normalized;
 
 		// Loop through length
 		for (int currentLength = 0; currentLength < length; currentLength++)
@@ -61,6 +61,7 @@ public class CaveGenerator
 			voxelGrid.WriteSphere(VectorFloatToInt(startPosition), 3, new Voxel());
 			startPosition += direction;
 			direction += curve;
+			direction.Normalize();
 		}
 	}
 

@@ -58,7 +58,7 @@ public class CaveGenerator
 		// Loop through length
 		for (int currentLength = 0; currentLength < length; currentLength++)
 		{
-			voxelGrid.WriteSphere(VectorFloatToInt(startPosition), 3, VoxelType.Air);
+			voxelGrid.WriteSphere(VectorFloatToInt(startPosition), 3, new Voxel());
 			startPosition += direction;
 			direction += curve;
 		}

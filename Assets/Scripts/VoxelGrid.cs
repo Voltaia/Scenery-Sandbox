@@ -115,18 +115,41 @@ public class VoxelGrid : MonoBehaviour
 		}
 	}
 
-	// Add a new voxel
-	public void SetVoxel(Vector3Int position, Voxel voxel)
+	// Write a voxel
+	public void WriteVoxel(Vector3Int position, Voxel voxel)
 	{
 		// Exit if voxel is out of bounds
-		if (
-			position.x < 0 || position.x >= Width
-			|| position.y < 0 || position.y >= Height
-			|| position.z < 0 || position.z >= Length
-		) return;
+		if (IsOutOfBounds(position)) return;
 
 		// Add voxel
 		voxels[position.x][position.y][position.z] = voxel;
+	}
+
+	// Write a sphere shape
+	public void WriteSphere(Vector3Int centerPosition, int radiusPlus, Voxel voxel)
+	{
+		// Loop through the positions of the sphere
+		for (int x = centerPosition.x - radiusPlus; x <= centerPosition.x + radiusPlus; x++)
+		{
+			for (int y = centerPosition.y - radiusPlus; y <= centerPosition.y + radiusPlus; y++)
+			{
+				for (int z = centerPosition.z - radiusPlus; z <= centerPosition.z + radiusPlus; z++)
+				{
+					// Check distance
+					Vector3Int currentPosition = new Vector3Int(x, y, z);
+					if (Vector3Int.Distance(centerPosition, currentPosition) < radiusPlus)
+						WriteVoxel(currentPosition, voxel);
+				}
+			}
+		}
+	}
+
+	// Check if position is out of bounds
+	public bool IsOutOfBounds(Vector3Int position)
+	{
+		return position.x < 0 || position.x >= Width
+			|| position.y < 0 || position.y >= Height
+			|| position.z < 0 || position.z >= Length;
 	}
 
 	// Generate the mesh

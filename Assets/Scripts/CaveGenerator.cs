@@ -20,34 +20,57 @@ public class CaveGenerator
 	{
 		// Get random values
 		Random.InitState(seed);
-		int caves = Random.Range(0, 40);
+		int caves = Random.Range(1, 5);
 
 		// Loop through caves
 		for (int cave = 1; cave <= caves; cave++)
 		{
 			// Get start location
-			Vector3Int position = new Vector3Int(
+			Vector3 startPosition = new Vector3(
 				Random.Range(0, voxelGrid.Width),
 				Random.Range(0, voxelGrid.Height),
 				Random.Range(0, voxelGrid.Length)
 			);
 
-			// Get delta
-			Vector3Int deltaPosition = new Vector3Int(
-				Random.Range(-1, 1),
-				Random.Range(-1, 1),
-				Random.Range(-1, 1)
+			// Get direction
+			Vector3 direction = new Vector3(
+				Random.Range(-1.0f, 1.0f),
+				Random.Range(-1.0f, 1.0f),
+				Random.Range(-1.0f, 1.0f)
 			);
 
-			// Get length
-			int length = Random.Range(16, 32);
-
-			// Loop through length
-			for (int currentLength = 0; currentLength < length; currentLength++)
-			{
-				voxelGrid.SetVoxel(position, new Voxel());
-				position += deltaPosition;
-			}
+			// Write cave
+			WriteCave(startPosition, direction);
 		}
+	}
+
+	// Write a singular cave
+	private void WriteCave(Vector3 startPosition, Vector3 direction)
+	{
+		// Get some random variables
+		int length = Random.Range(voxelGrid.Width / 2, voxelGrid.Width);
+		Vector3 curve = new Vector3(
+			Random.Range(-0.1f, 0.1f),
+			Random.Range(-0.1f, 0.1f),
+			Random.Range(-0.1f, 0.1f)
+		);
+
+		// Loop through length
+		for (int currentLength = 0; currentLength < length; currentLength++)
+		{
+			voxelGrid.WriteSphere(VectorFloatToInt(startPosition), 3, new Voxel());
+			startPosition += direction;
+			direction += curve;
+		}
+	}
+
+	// Convert from vector float to vector int
+	private Vector3Int VectorFloatToInt(Vector3 vector)
+	{
+		return new Vector3Int(
+			Mathf.FloorToInt(vector.x),
+			Mathf.FloorToInt(vector.y),
+			Mathf.FloorToInt(vector.z)
+		);
 	}
 }

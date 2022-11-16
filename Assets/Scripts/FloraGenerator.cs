@@ -29,9 +29,5 @@ public class FloraGenerator
 
 		// Loop through placements of flora
 		int floraPlaced = 0;
-		while (floraPlaced < floraToPlace)
-		{
-
-		}
 	}
 }

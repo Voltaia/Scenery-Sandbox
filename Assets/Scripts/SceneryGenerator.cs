@@ -11,6 +11,7 @@ public class SceneryGenerator : MonoBehaviour
 	[Header("Generation")]
 	public bool generateNew = true;
 	public bool randomizeSeed = true;
+	[Range(0, 1000)]
 	public int seed;
 
 	[Header("Options")]

@@ -22,7 +22,7 @@ public class TerrainGenerator
 
 		// Temporary layer settings
 		layers.Clear();
-		layers.Add(new Layer(VoxelType.Grass, 2));
+		layers.Add(new Layer(VoxelType.DripGrass, 1));
 		layers.Add(new Layer(VoxelType.Dirt, 3));
 		layers.Add(new Layer(VoxelType.Stone, 64));
 	}

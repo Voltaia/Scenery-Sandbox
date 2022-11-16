@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3918eabae0d755d419dd60579b41c6e8, type: 3}
   m_Name: DripGrass
   m_EditorClassIdentifier: 
-  topTextureCoordinates: {x: 5, y: 0}
+  topTextureCoordinates: {x: 4, y: 0}
   sideTextureCoordinates: {x: 5, y: 0}
   bottomTextureCoordinates: {x: 6, y: 0}

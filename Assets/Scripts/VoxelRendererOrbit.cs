@@ -5,8 +5,7 @@ using UnityEngine;
 using UnityEditor;
 
 // Orbits around a central point
-[ExecuteInEditMode]
-public class VoxelGridOrbit : MonoBehaviour
+public class VoxelRendererOrbit : MonoBehaviour
 {
 	// Inspector variables
 	public float height;
@@ -14,13 +13,17 @@ public class VoxelGridOrbit : MonoBehaviour
 	public float orbitAmount;
 
 	// Class variables
-	private Vector3 subjectPosition;
+	private VoxelRenderer voxelRenderer;
+	private Vector3 subjectPosition = Vector3.zero;
 
 	// Start is called before the first frame update
 	private void Start()
 	{
-		VoxelGrid voxelGrid = FindObjectOfType<VoxelGrid>();
-		subjectPosition = voxelGrid.transform.position + new Vector3(voxelGrid.Width / 2, voxelGrid.Height / 2, voxelGrid.Length / 2);
+		// Get voxel renderer
+		voxelRenderer = FindObjectOfType<VoxelRenderer>();
+
+		// Wait for voxel grid variable
+		StartCoroutine(WaitForVoxelGrid());
 	}
 
 	// Update is called once per frame
@@ -45,5 +48,17 @@ public class VoxelGridOrbit : MonoBehaviour
 	{
 		Handles.color = Color.blue;
 		Handles.DrawWireDisc(subjectPosition + height * Vector3.up, Vector3.up, radius);
+	}
+
+	// Don't populate the position until voxel grid is filled
+	private IEnumerator WaitForVoxelGrid()
+	{
+		// Wait for voxel grid to populate
+		while (voxelRenderer.voxelGrid == null) yield return null;
+
+		// Update subject position now that we can access it
+		subjectPosition
+			= voxelRenderer.transform.position
+			+ new Vector3(voxelRenderer.voxelGrid.width / 2, voxelRenderer.voxelGrid.height / 2, voxelRenderer.voxelGrid.length / 2);
 	}
 }

@@ -417,7 +417,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1712650644}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3412cd3bc8d5ad34f861acd605b592ac, type: 3}
+  m_Script: {fileID: 11500000, guid: 342abd0d28ede0345934b482b9398431, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   texturesBlockWidth: 8
@@ -519,3 +519,4 @@ MonoBehaviour:
   seed: 0
   generateTerrain: 1
   generateCaves: 1
+  generateFlora: 1

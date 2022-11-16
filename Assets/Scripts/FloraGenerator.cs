@@ -28,6 +28,6 @@ public class FloraGenerator
 		int floraToPlace = Random.Range(MinimumFlora, MaximumFlora);
 
 		// Loop through placements of flora
-		int floraPlaced = 0;
+		//int floraPlaced = 0;
 	}
 }

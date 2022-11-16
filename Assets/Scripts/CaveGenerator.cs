@@ -34,9 +34,9 @@ public class CaveGenerator
 		{
 			// Get start location
 			Vector3 startPosition = new Vector3(
-				Random.Range(0, voxelGrid.Width),
-				Random.Range(0, voxelGrid.Height),
-				Random.Range(0, voxelGrid.Length)
+				Random.Range(0, voxelGrid.width),
+				Random.Range(0, voxelGrid.height),
+				Random.Range(0, voxelGrid.length)
 			);
 
 			// Get direction
@@ -55,7 +55,7 @@ public class CaveGenerator
 	private void WriteCave(Vector3 startPosition, Vector3 direction)
 	{
 		// Get some random variables
-		int length = Random.Range(voxelGrid.Width / 2, voxelGrid.Width);
+		int length = Random.Range(voxelGrid.width / 2, voxelGrid.width);
 		Vector3 curveDirection = new Vector3(
 			Random.Range(-1.0f, 1.0f),
 			Random.Range(-1.0f, 1.0f),

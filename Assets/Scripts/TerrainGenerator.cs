@@ -31,13 +31,13 @@ public class TerrainGenerator
 	public void WriteTerrain(int seed)
 	{
 		// Loop through X and Z coordinates
-		for (int x = 0; x < voxelGrid.Width; x++)
+		for (int x = 0; x < voxelGrid.width; x++)
 		{
-			for (int z = 0; z < voxelGrid.Length; z++)
+			for (int z = 0; z < voxelGrid.length; z++)
 			{
 				// Generate height using perlin noise
-				float perlinX = ((float)x / voxelGrid.Width) * (seed / 1000.0f);
-				float perlinY = ((float)z / voxelGrid.Length) * (seed / 1000.0f);
+				float perlinX = ((float)x / voxelGrid.width) * (seed / 1000.0f);
+				float perlinY = ((float)z / voxelGrid.length) * (seed / 1000.0f);
 				int y = SurfaceStartHeight + (int)(Mathf.PerlinNoise(perlinX, perlinY) * SurfaceVariation * 2);
 				voxelGrid.WriteVoxel(new Vector3Int(x, y, z), layers[0].voxelType);
 

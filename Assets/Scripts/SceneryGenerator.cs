@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Generates a terrain
-[RequireComponent(typeof(VoxelGrid))]
+[RequireComponent(typeof(VoxelRenderer))]
 public class SceneryGenerator : MonoBehaviour
 {
 	// Inspector variables
@@ -21,6 +21,7 @@ public class SceneryGenerator : MonoBehaviour
 
 	// Class variables
 	private VoxelGrid voxelGrid;
+	private VoxelRenderer voxelRenderer;
 	private TerrainGenerator terrainGenerator;
 	private CaveGenerator caveGenerator;
 	private FloraGenerator floraGenerator;
@@ -28,8 +29,12 @@ public class SceneryGenerator : MonoBehaviour
 	// Start is called before the first frame update
 	private void Start()
 	{
+		// Create a new voxel grid
+		voxelGrid = new VoxelGrid(48, 48, 48);
+
 		// Fill in variables
-		voxelGrid = GetComponent<VoxelGrid>();
+		voxelRenderer = GetComponent<VoxelRenderer>();
+		voxelRenderer.voxelGrid = voxelGrid;
 		terrainGenerator = new TerrainGenerator(voxelGrid);
 		caveGenerator = new CaveGenerator(voxelGrid);
 		floraGenerator = new FloraGenerator(voxelGrid);
@@ -53,7 +58,7 @@ public class SceneryGenerator : MonoBehaviour
 	// Generate a new terrain
 	public void Generate()
 	{
-		// Wipe voxel grid
+		// Reset voxel grid
 		voxelGrid.NewGrid();
 
 		// Make changes to voxel grid
@@ -62,7 +67,7 @@ public class SceneryGenerator : MonoBehaviour
 		if (generateFlora) floraGenerator.WriteFlora(seed);
 
 		// Apply changes
-		voxelGrid.GenerateMesh();
+		voxelRenderer.GenerateMesh();
 	}
 
 	// Randomize seed

@@ -3,19 +3,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Generates an outline around a voxel grid
-[RequireComponent(typeof(VoxelGrid))]
+// Generates an outline around a voxel renderer
+[RequireComponent(typeof(VoxelRenderer))]
 public class VoxelGridOutline : MonoBehaviour
 {
 	// Inspector variables
 	public Material material;
 
+	// Class variables
+	private VoxelRenderer voxelRenderer;
+	private LineRenderer[] lineRenderers = new LineRenderer[12];
+
 	// Start is called before the first frame update
 	private void Start()
 	{
 		// Set up
-		VoxelGrid voxelGrid = GetComponent<VoxelGrid>();
-		LineRenderer[] lineRenderers = new LineRenderer[12];
+		voxelRenderer = GetComponent<VoxelRenderer>();
+
+		// Wait for voxel grid to populate before generating
+		StartCoroutine(WaitForVoxelGrid());
+	}
+
+	// Generate everything after voxel grid is populated
+	private IEnumerator WaitForVoxelGrid()
+	{
+		// Wait for voxel grid to populate
+		while (voxelRenderer.voxelGrid == null) yield return null;
 
 		// Create game objects for line renderers
 		for (int index = 0; index < lineRenderers.Length; index++)
@@ -35,11 +48,11 @@ public class VoxelGridOutline : MonoBehaviour
 		}
 
 		// Set corners
-		Vector3[] corners = new Vector3[voxelGrid.cornerOffsets.Length];
+		Vector3[] corners = new Vector3[voxelRenderer.cornerOffsets.Length];
 		for (int index = 0; index < corners.Length; index++) corners[index] = new Vector3(
-			voxelGrid.cornerOffsets[index].x * voxelGrid.Width,
-			voxelGrid.cornerOffsets[index].y * voxelGrid.Height,
-			voxelGrid.cornerOffsets[index].z * voxelGrid.Length
+			voxelRenderer.cornerOffsets[index].x * voxelRenderer.voxelGrid.width,
+			voxelRenderer.cornerOffsets[index].y * voxelRenderer.voxelGrid.height,
+			voxelRenderer.cornerOffsets[index].z * voxelRenderer.voxelGrid.length
 		);
 
 		// Bottom lines

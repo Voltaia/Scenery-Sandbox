@@ -17,11 +17,13 @@ public class SceneryGenerator : MonoBehaviour
 	[Header("Options")]
 	public bool generateTerrain = true;
 	public bool generateCaves = true;
+	public bool generateFlora = true;
 
 	// Class variables
 	private VoxelGrid voxelGrid;
 	private TerrainGenerator terrainGenerator;
 	private CaveGenerator caveGenerator;
+	private FloraGenerator floraGenerator;
 
 	// Start is called before the first frame update
 	private void Start()
@@ -30,6 +32,7 @@ public class SceneryGenerator : MonoBehaviour
 		voxelGrid = GetComponent<VoxelGrid>();
 		terrainGenerator = new TerrainGenerator(voxelGrid);
 		caveGenerator = new CaveGenerator(voxelGrid);
+		floraGenerator = new FloraGenerator(voxelGrid);
 	}
 
 	// Called every frame
@@ -56,6 +59,7 @@ public class SceneryGenerator : MonoBehaviour
 		// Make changes to voxel grid
 		if (generateTerrain) terrainGenerator.WriteTerrain(seed);
 		if (generateCaves) caveGenerator.WriteCaves(seed);
+		if (generateFlora) floraGenerator.WriteFlora(seed);
 
 		// Apply changes
 		voxelGrid.GenerateMesh();

@@ -72,6 +72,13 @@ public class VoxelGrid
 		}
 	}
 
+	// Read a voxel
+	public VoxelType ReadVoxel(Vector3Int position)
+	{
+		// Read voxel
+		return voxels[position.x, position.y, position.z];
+	}
+
 	// Check if position is out of bounds
 	public bool IsOutOfBounds(Vector3Int position)
 	{

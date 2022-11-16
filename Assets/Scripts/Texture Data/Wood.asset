@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3918eabae0d755d419dd60579b41c6e8, type: 3}
   m_Name: Wood
   m_EditorClassIdentifier: 
-  topTextureCoordinates: {x: 0, y: 0}
-  sideTextureCoordinates: {x: 0, y: 0}
-  bottomTextureCoordinates: {x: 0, y: 0}
+  topTextureCoordinates: {x: 2, y: 1}
+  sideTextureCoordinates: {x: 1, y: 1}
+  bottomTextureCoordinates: {x: 2, y: 1}

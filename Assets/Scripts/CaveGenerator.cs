@@ -73,7 +73,7 @@ public class CaveGenerator
 			if (voxelGrid.IsOutOfBounds(gridPosition)) return;
 
 			// Bore segment of cave
-			voxelGrid.WriteSphere(gridPosition, Radius, new Voxel());
+			voxelGrid.WriteSphere(gridPosition, Radius, VoxelType.Air);
 
 			// Change cave position
 			startPosition += direction;

@@ -13,7 +13,7 @@ public class VoxelGrid : MonoBehaviour
 
 	// Class variables
 	private Mesh mesh;
-	private Voxel[,,] voxels;
+	private VoxelType[,,] voxels;
 	private List<Vector3> vertices = new List<Vector3>();
 	private List<int> triangles = new List<int>();
 	private List<Vector2> uvCoordinates = new List<Vector2>();
@@ -90,7 +90,7 @@ public class VoxelGrid : MonoBehaviour
 	public void NewGrid()
 	{
 		// Loop through all dimensions and create air voxels
-		voxels = new Voxel[Width, Height, Length];
+		voxels = new VoxelType[Width, Height, Length];
 		for (int x = 0; x < Width; x++)
 		{
 			for (int y = 0; y < Height; y++)
@@ -98,21 +98,21 @@ public class VoxelGrid : MonoBehaviour
 				for (int z = 0; z < Length; z++)
 				{
 
-					voxels[x, y, z] = new Voxel();
+					voxels[x, y, z] = VoxelType.Air;
 				}
 			}
 		}
 	}
 
 	// Write a voxel
-	public void WriteVoxel(Vector3Int position, Voxel voxel)
+	public void WriteVoxel(Vector3Int position, VoxelType voxelType)
 	{
 		// Add voxel
-		voxels[position.x, position.y, position.z] = voxel;
+		voxels[position.x, position.y, position.z] = voxelType;
 	}
 
 	// Write a sphere shape
-	public void WriteSphere(Vector3Int centerPosition, int radiusPlus, Voxel voxel)
+	public void WriteSphere(Vector3Int centerPosition, int radiusPlus, VoxelType voxelType)
 	{
 		// Loop through the positions of the sphere
 		for (int x = centerPosition.x - radiusPlus; x <= centerPosition.x + radiusPlus; x++)
@@ -128,7 +128,7 @@ public class VoxelGrid : MonoBehaviour
 					if (
 						!IsOutOfBounds(currentPosition)
 						&& Vector3Int.Distance(centerPosition, currentPosition) < radiusPlus
-					) WriteVoxel(currentPosition, voxel);
+					) WriteVoxel(currentPosition, voxelType);
 				}
 			}
 		}
@@ -158,21 +158,21 @@ public class VoxelGrid : MonoBehaviour
 				for (int z = 0; z < Length; z++)
 				{
 					// Get the voxel
-					Voxel voxel = voxels[x, y, z];
+					VoxelType voxelType = voxels[x, y, z];
 
 					// If the voxel is air itself there is no reason to create a quad
-					if (voxel.type == VoxelType.Air) continue;
+					if (voxelType == VoxelType.Air) continue;
 
 					// Get voxel position
 					Vector3Int voxelPosition = new Vector3Int(x, y, z);
 
 					// If there is air on a side of the voxel, place a quad
-					if (x - 1 < 0 || voxels[x - 1, y, z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Left);
-					if (x + 1 >= Width || voxels[x + 1, y, z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Right);
-					if (y + 1 >= Height || voxels[x, y + 1, z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Top);
-					if (y - 1 < 0 || voxels[x, y - 1, z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Bottom);
-					if (z - 1 < 0 || voxels[x, y, z - 1].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Front);
-					if (z + 1 >= Length || voxels[x, y, z + 1].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Back);
+					if (x - 1 < 0 || voxels[x - 1, y, z] == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Left);
+					if (x + 1 >= Width || voxels[x + 1, y, z] == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Right);
+					if (y + 1 >= Height || voxels[x, y + 1, z] == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Top);
+					if (y - 1 < 0 || voxels[x, y - 1, z] == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Bottom);
+					if (z - 1 < 0 || voxels[x, y, z - 1] == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Front);
+					if (z + 1 >= Length || voxels[x, y, z + 1] == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Back);
 				}
 			}
 		}
@@ -192,13 +192,13 @@ public class VoxelGrid : MonoBehaviour
 	}
 
 	// Add a quad to the triangles and vertices
-	private void AddQuad(Voxel voxel, Vector3Int position, VoxelSide side)
+	private void AddQuad(VoxelType voxelType, Vector3Int position, VoxelSide side)
 	{
 		// Set up
 		int vertexStartingIndex = vertices.Count;
 
 		// Get the UV coordinates for each side of the voxel
-		int blockTypeIndex = voxel.typeIndex;
+		int blockTypeIndex = (int)voxelType;
 		TextureCoordinates voxelTexture = voxelTextures[blockTypeIndex];
 		Vector2 uvSideCoordinates = (Vector2)voxelTexture.sideTextureCoordinates / texturesBlockWidth;
 		Vector2 uvTopCoordinates = (Vector2)voxelTexture.topTextureCoordinates / texturesBlockWidth;

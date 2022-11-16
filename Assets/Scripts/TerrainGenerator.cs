@@ -39,7 +39,7 @@ public class TerrainGenerator
 				float perlinX = ((float)x / voxelGrid.Width) * (seed / 1000.0f);
 				float perlinY = ((float)z / voxelGrid.Length) * (seed / 1000.0f);
 				int y = SurfaceStartHeight + (int)(Mathf.PerlinNoise(perlinX, perlinY) * SurfaceVariation * 2);
-				voxelGrid.WriteVoxel(new Vector3Int(x, y, z), new Voxel(layers[0].voxelType));
+				voxelGrid.WriteVoxel(new Vector3Int(x, y, z), layers[0].voxelType);
 
 				// Set some things up for depth
 				int depth = 1;
@@ -60,7 +60,7 @@ public class TerrainGenerator
 					// Add voxel and move to next level
 					voxelGrid.WriteVoxel(
 						new Vector3Int(x, y, z),
-						new Voxel(layers[layerIndex].voxelType)
+						layers[layerIndex].voxelType
 					);
 					y--;
 				}

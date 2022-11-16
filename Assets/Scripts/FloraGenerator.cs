@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Generates flora on a voxel grid
-public class FloraGenerator : MonoBehaviour
+public class FloraGenerator
 {
     // Class variables
     private VoxelGrid voxelGrid;

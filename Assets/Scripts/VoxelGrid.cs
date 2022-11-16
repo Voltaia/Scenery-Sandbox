@@ -13,7 +13,7 @@ public class VoxelGrid : MonoBehaviour
 
 	// Class variables
 	private Mesh mesh;
-	private Voxel[][][] voxels;
+	private Voxel[,,] voxels;
 	private List<Vector3> vertices = new List<Vector3>();
 	private List<int> triangles = new List<int>();
 	private List<Vector2> uvCoordinates = new List<Vector2>();
@@ -82,15 +82,6 @@ public class VoxelGrid : MonoBehaviour
 		mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32; // increases max vertex count
 		GetComponent<MeshFilter>().mesh = mesh;
 
-		// Add starter voxels
-		voxels[0][0][0] = new Voxel(VoxelType.Blueprint);
-		voxels[1][0][0] = new Voxel(VoxelType.Blueprint);
-		voxels[0][0][1] = new Voxel(VoxelType.Blueprint);
-		voxels[0][1][0] = new Voxel(VoxelType.Blueprint);
-
-		voxels[2][0][2] = new Voxel(VoxelType.Dirt);
-		voxels[2][1][2] = new Voxel(VoxelType.Grass);
-
 		// Create mesh
 		GenerateMesh();
 	}
@@ -99,17 +90,15 @@ public class VoxelGrid : MonoBehaviour
 	public void NewGrid()
 	{
 		// Loop through all dimensions and create air voxels
-		voxels = new Voxel[Width][][];
+		voxels = new Voxel[Width, Height, Length];
 		for (int x = 0; x < Width; x++)
 		{
-			voxels[x] = new Voxel[Height][];
 			for (int y = 0; y < Height; y++)
 			{
-				voxels[x][y] = new Voxel[Length];
 				for (int z = 0; z < Length; z++)
 				{
 
-					voxels[x][y][z] = new Voxel();
+					voxels[x, y, z] = new Voxel();
 				}
 			}
 		}
@@ -119,7 +108,7 @@ public class VoxelGrid : MonoBehaviour
 	public void WriteVoxel(Vector3Int position, Voxel voxel)
 	{
 		// Add voxel
-		voxels[position.x][position.y][position.z] = voxel;
+		voxels[position.x, position.y, position.z] = voxel;
 	}
 
 	// Write a sphere shape
@@ -169,7 +158,7 @@ public class VoxelGrid : MonoBehaviour
 				for (int z = 0; z < Length; z++)
 				{
 					// Get the voxel
-					Voxel voxel = voxels[x][y][z];
+					Voxel voxel = voxels[x, y, z];
 
 					// If the voxel is air itself there is no reason to create a quad
 					if (voxel.type == VoxelType.Air) continue;
@@ -178,12 +167,12 @@ public class VoxelGrid : MonoBehaviour
 					Vector3Int voxelPosition = new Vector3Int(x, y, z);
 
 					// If there is air on a side of the voxel, place a quad
-					if (x - 1 < 0 || voxels[x - 1][y][z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Left);
-					if (x + 1 >= Width || voxels[x + 1][y][z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Right);
-					if (y + 1 >= Height || voxels[x][y + 1][z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Top);
-					if (y - 1 < 0 || voxels[x][y - 1][z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Bottom);
-					if (z - 1 < 0 || voxels[x][y][z - 1].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Front);
-					if (z + 1 >= Length || voxels[x][y][z + 1].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Back);
+					if (x - 1 < 0 || voxels[x - 1, y, z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Left);
+					if (x + 1 >= Width || voxels[x + 1, y, z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Right);
+					if (y + 1 >= Height || voxels[x, y + 1, z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Top);
+					if (y - 1 < 0 || voxels[x, y - 1, z].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Bottom);
+					if (z - 1 < 0 || voxels[x, y, z - 1].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Front);
+					if (z + 1 >= Length || voxels[x, y, z + 1].type == VoxelType.Air) AddQuad(voxel, voxelPosition, VoxelSide.Back);
 				}
 			}
 		}

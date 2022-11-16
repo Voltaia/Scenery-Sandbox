@@ -9,6 +9,11 @@ public class FloraGenerator
     // Class variables
     private VoxelGrid voxelGrid;
 
+	// Class settings
+	private const int MinimumSpacing = 5;
+	private const int MinimumFlora = 8;
+	private const int MaximumFlora = 12;
+
 	// Constructor
 	public FloraGenerator(VoxelGrid voxelGrid)
 	{
@@ -19,7 +24,14 @@ public class FloraGenerator
 	// Write flora to grid
 	public void WriteFlora(int seed)
 	{
-		// Create grid for samples
-		
+		// Get random amount of flora
+		int floraToPlace = Random.Range(MinimumFlora, MaximumFlora);
+
+		// Loop through placements of flora
+		int floraPlaced = 0;
+		while (floraPlaced < floraToPlace)
+		{
+
+		}
 	}
 }

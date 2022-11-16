@@ -8,6 +8,7 @@ public enum VoxelType
 	Dirt,
 	Stone,
 	Leaves,
+	Wood,
 }
 
 // A pretty cube

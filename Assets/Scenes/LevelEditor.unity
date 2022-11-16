@@ -429,6 +429,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fd164dc7ce689034699ebc02987ee334, type: 2}
   - {fileID: 11400000, guid: 21ea3d2df3da0c5458a4fa1348b9db3f, type: 2}
   - {fileID: 11400000, guid: 8cd14dbc179e82f4bbdd2a22e418aa31, type: 2}
+  - {fileID: 11400000, guid: 147ba7f0907f84d42bd38482a240b364, type: 2}
   cornerOffsets:
   - {x: 0, y: 0, z: 0}
   - {x: 1, y: 0, z: 0}

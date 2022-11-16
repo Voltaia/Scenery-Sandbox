@@ -80,10 +80,10 @@ public class CaveGenerator
 			direction = Quaternion.AngleAxis(curveAmount, curveDirection) * direction;
 
 			// Split cave
-			if (Random.Range(0.0f, 1.0f) < ForkChance)
+			if (Random.value < ForkChance)
 			{
 				// Get a direction for the new cave and generate it
-				float forkAngle = Random.Range(0.0f, 1.0f) < 0.5f ? -90.0f : 90.0f;
+				float forkAngle = Random.value < 0.5f ? -90.0f : 90.0f;
 				Vector3 forkDirection = Quaternion.AngleAxis(forkAngle, Vector3.up) * direction;
 				WriteCave(startPosition, forkDirection);
 			}

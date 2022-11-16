@@ -7,6 +7,7 @@ public enum VoxelType
 	DripGrass,
 	Dirt,
 	Stone,
+	Leaves,
 }
 
 // A pretty cube

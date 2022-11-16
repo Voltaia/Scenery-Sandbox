@@ -24,6 +24,18 @@ public class VoxelGridOutline : MonoBehaviour
 		StartCoroutine(WaitForVoxelGrid());
 	}
 
+	// When enabled
+	private void OnEnable()
+	{
+		foreach (LineRenderer lineRenderer in lineRenderers) if (lineRenderer != null) lineRenderer.enabled = true;
+	}
+
+	// When disabled
+	private void OnDisable()
+	{
+		foreach (LineRenderer lineRenderer in lineRenderers) if (lineRenderer != null) lineRenderer.enabled = false;
+	}
+
 	// Generate everything after voxel grid is populated
 	private IEnumerator WaitForVoxelGrid()
 	{

@@ -43,12 +43,14 @@ public class VoxelRendererOrbit : MonoBehaviour
 		transform.LookAt(subjectPosition);
 	}
 
+#if UNITY_EDITOR
 	// Draw camera features
 	private void OnDrawGizmos()
 	{
 		Handles.color = Color.blue;
 		Handles.DrawWireDisc(subjectPosition + height * Vector3.up, Vector3.up, radius);
 	}
+#endif
 
 	// Don't populate the position until voxel grid is filled
 	private IEnumerator WaitForVoxelGrid()

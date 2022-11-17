@@ -53,19 +53,11 @@ public class FloraGenerator
 			// Check if passed the first test
 			if (positionAcceptable)
 			{
-				// Reset pass flag
-				positionAcceptable = false;
-
 				// Check if surface below is acceptable
-				while (!positionAcceptable && spawnY >= 2)
-				{
-					// Move down
-					spawnY--;
-
-					// Check block below and set y as we go
-					VoxelType voxelTypeBelow = voxelGrid.ReadVoxel(spawnX, spawnY - 1, spawnZ);
-					if (voxelTypeBelow != VoxelType.Air && voxelTypeBelow != VoxelType.Stone) positionAcceptable = true;
-				}
+				spawnY = voxelGrid.GetSurfaceY(spawnX, spawnZ);
+				VoxelType surfaceVoxelType = voxelGrid.ReadVoxel(spawnX, spawnY, spawnZ);
+				if (surfaceVoxelType != VoxelType.DripGrass && surfaceVoxelType != VoxelType.Grass) positionAcceptable = false;
+				else spawnY++;
 			}
 
 			// Place if acceptable

@@ -72,7 +72,7 @@ public class VoxelGrid
 					int writeZ = cornerZ + copyZ;
 
 					// Copy
-					if (IsOutOfBounds(writeX, writeY, writeZ)) continue;
+					if (IsOutOfBounds(writeX, writeY, writeZ)) return;
 					if (!overwriteSolids && ReadVoxel(writeX, writeY, writeZ) != VoxelType.Air) continue;
 					WriteVoxel(writeX, writeY, writeZ, voxelGrid.ReadVoxel(copyX, copyY, copyZ));
 				}
@@ -89,6 +89,26 @@ public class VoxelGrid
 	{
 		// Read voxel
 		return voxels[x, y, z];
+	}
+
+	// Get surface at location
+	public int GetSurfaceY(int x, int z)
+	{
+		// Loop until surface is found
+		int surfaceY = height;
+		bool surfaceFound = false;
+		while (!surfaceFound && surfaceY >= 0)
+		{
+			// Scan down
+			surfaceY--;
+
+			// Check block below and set y as we go
+			VoxelType voxelType = ReadVoxel(x, surfaceY, z);
+			if (voxelType != VoxelType.Air) surfaceFound = true;
+		}
+
+		// Return surface height
+		return surfaceY;
 	}
 
 	// Check if position is out of bounds

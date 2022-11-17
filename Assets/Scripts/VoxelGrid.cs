@@ -42,41 +42,41 @@ public class VoxelGrid
 		}
 	}
 
-	// Write a voxel with a vector position
-	public void WriteVoxel(Vector3Int position, VoxelType voxelType)
-	{
-		// Add voxel
-		voxels[position.x, position.y, position.z] = voxelType;
-	}
-
 	// Write a voxel with coordinates
 	public void WriteVoxel(int x, int y, int z, VoxelType voxelType)
 	{
 		// Add voxel
 		voxels[x, y, z] = voxelType;
 	}
+	public void WriteVoxel(Vector3Int position, VoxelType voxelType)
+	{ WriteVoxel(position.x, position.y, position.z, voxelType); }
 
 	// Write a sphere shape
-	public void WriteSphere(Vector3Int centerPosition, int radiusPlus, VoxelType voxelType)
+	public void WriteSphere(int centerX, int centerY, int centerZ, int radiusPlus, VoxelType voxelType)
 	{
 		// Loop through the positions of the sphere
-		for (int x = centerPosition.x - radiusPlus; x <= centerPosition.x + radiusPlus; x++)
+		for (int x = centerX - radiusPlus; x <= centerX + radiusPlus; x++)
 		{
-			for (int y = centerPosition.y - radiusPlus; y <= centerPosition.y + radiusPlus; y++)
+			for (int y = centerY - radiusPlus; y <= centerY + radiusPlus; y++)
 			{
-				for (int z = centerPosition.z - radiusPlus; z <= centerPosition.z + radiusPlus; z++)
+				for (int z = centerZ - radiusPlus; z <= centerZ + radiusPlus; z++)
 				{
-					// Create vector for position
-					Vector3Int currentPosition = new Vector3Int(x, y, z);
-
 					// Check distance and write if within radius
 					if (
-						!IsOutOfBounds(currentPosition)
-						&& Vector3Int.Distance(centerPosition, currentPosition) < radiusPlus
-					) WriteVoxel(currentPosition, voxelType);
+						!IsOutOfBounds(x, y, z)
+						&& GetVoxelDistance(centerX, centerY, centerZ, x, y, z) < radiusPlus
+					) WriteVoxel(x, y, z, voxelType);
 				}
 			}
 		}
+	}
+	public void WriteSphere(Vector3Int centerPosition, int radiusPlus, VoxelType voxelType)
+	{ WriteSphere(centerPosition.x, centerPosition.y, centerPosition.z, radiusPlus, voxelType); }
+
+	// Get distance between voxel positions
+	public float GetVoxelDistance(float x1, float y1, float z1, float x2, float y2, float z2)
+	{
+		return Mathf.Sqrt(Mathf.Pow(x1 - x2, 2) + Mathf.Pow(y1 - y2, 2) + Mathf.Pow(z1 - z2, 2));
 	}
 
 	// Read a voxel
@@ -87,10 +87,12 @@ public class VoxelGrid
 	}
 
 	// Check if position is out of bounds
-	public bool IsOutOfBounds(Vector3Int position)
+	public bool IsOutOfBounds(int x, int y, int z)
 	{
-		return position.x < 0 || position.x >= width
-			|| position.y < 0 || position.y >= height
-			|| position.z < 0 || position.z >= length;
+		return x < 0 || x >= width
+			|| y < 0 || y >= height
+			|| z < 0 || z >= length;
 	}
+	public bool IsOutOfBounds(Vector3Int position)
+	{ return IsOutOfBounds(position.x, position.y, position.z); }
 }

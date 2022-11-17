@@ -10,7 +10,7 @@ public class VoxelRenderer : MonoBehaviour
 	// Inspector variables
 	public VoxelGrid voxelGrid;
 	public int texturesBlockWidth;
-    public TextureCoordinates[] voxelTextures;
+    public VoxelData[] voxelsData;
 
 	// Class variables
     private Mesh mesh;
@@ -136,10 +136,10 @@ public class VoxelRenderer : MonoBehaviour
 
 		// Get the UV coordinates for each side of the voxel
 		int blockTypeIndex = (int)voxelType;
-		TextureCoordinates voxelTexture = voxelTextures[blockTypeIndex];
-		Vector2 uvSideCoordinates = (Vector2)voxelTexture.sideTextureCoordinates / texturesBlockWidth;
-		Vector2 uvTopCoordinates = (Vector2)voxelTexture.topTextureCoordinates / texturesBlockWidth;
-		Vector2 uvBottomCoordinates = (Vector2)voxelTexture.bottomTextureCoordinates / texturesBlockWidth;
+		VoxelData voxelData = voxelsData[blockTypeIndex];
+		Vector2 uvSideCoordinates = (Vector2)voxelData.sideTextureCoordinates / texturesBlockWidth;
+		Vector2 uvTopCoordinates = (Vector2)voxelData.topTextureCoordinates / texturesBlockWidth;
+		Vector2 uvBottomCoordinates = (Vector2)voxelData.bottomTextureCoordinates / texturesBlockWidth;
 
 		// Placeholder variables
 		int[] faceCorners;

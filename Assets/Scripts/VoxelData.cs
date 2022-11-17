@@ -2,7 +2,7 @@
 using UnityEngine;
 
 // Holds texture values for voxels
-[CreateAssetMenu(fileName = "Blank Voxel Data", menuName = "ScriptableObjects/Voxel Data")]
+[CreateAssetMenu(fileName = "Blank Voxel Data", menuName = "Voxel Data")]
 public class VoxelData : ScriptableObject
 {
 	public Vector2Int topTextureCoordinates;

@@ -117,27 +117,27 @@ public class VoxelRenderer : MonoBehaviour
 		Vector3Int voxelPosition = new Vector3Int(x, y, z);
 
 		// Check left
-		if (invertFaces || CanPlaceQuadInDirection(x - 1, y, z))
+		if (CanPlaceQuadInDirection(x - 1, y, z))
 			AddQuad(voxelPosition, voxelType, VoxelSide.Left, invertFaces);
 
 		// Check right
-		if (invertFaces || CanPlaceQuadInDirection(x + 1, y, z))
+		if (CanPlaceQuadInDirection(x + 1, y, z))
 			AddQuad(voxelPosition, voxelType, VoxelSide.Right, invertFaces);
 
 		// Check up
-		if (invertFaces || CanPlaceQuadInDirection(x, y + 1, z))
+		if (CanPlaceQuadInDirection(x, y + 1, z))
 			AddQuad(voxelPosition, voxelType, VoxelSide.Top, invertFaces);
 
 		// Check down
-		if (invertFaces || CanPlaceQuadInDirection(x, y - 1, z))
+		if (CanPlaceQuadInDirection(x, y - 1, z))
 			AddQuad(voxelPosition, voxelType, VoxelSide.Bottom, invertFaces);
 
 		// Check backwards
-		if (invertFaces || CanPlaceQuadInDirection(x, y, z - 1))
+		if (CanPlaceQuadInDirection(x, y, z - 1))
 			AddQuad(voxelPosition, voxelType, VoxelSide.Front, invertFaces);
 
 		// Check forwards
-		if (invertFaces || CanPlaceQuadInDirection(x, y, z + 1))
+		if (CanPlaceQuadInDirection(x, y, z + 1))
 			AddQuad(voxelPosition, voxelType, VoxelSide.Back, invertFaces);
 	}
 

@@ -23,18 +23,41 @@ public static class VoxelStructures
 		{
 			// Tree structure
 			case StructureType.Tree:
-				voxelGrid = new VoxelGrid(5, 7, 5);
-				voxelGrid.WriteVoxel(2, 0, 2, VoxelType.Wood);
-				voxelGrid.WriteVoxel(2, 1, 2, VoxelType.Wood);
+				// Create grid
+				voxelGrid = new VoxelGrid(3, 5, 3);
+
+				// Write leaves
+				voxelGrid.WriteVoxel(0, 4, 1, VoxelType.Leaves);
+				voxelGrid.WriteVoxel(2, 4, 1, VoxelType.Leaves);
+				voxelGrid.WriteVoxel(1, 4, 0, VoxelType.Leaves);
+				voxelGrid.WriteVoxel(1, 4, 1, VoxelType.Leaves);
+				voxelGrid.WriteVoxel(1, 4, 2, VoxelType.Leaves);
+				for (int x = 0; x < 3; x++)
+					for (int y = 2; y < 4; y++)
+						for (int z = 0; z < 3; z++)
+							voxelGrid.WriteVoxel(x, y, z, VoxelType.Leaves);
+
+				// Write trunk
+				voxelGrid.WriteVoxel(1, 0, 1, VoxelType.Wood);
+				voxelGrid.WriteVoxel(1, 1, 1, VoxelType.Wood);
+				voxelGrid.WriteVoxel(1, 2, 1, VoxelType.Wood);
+				voxelGrid.WriteVoxel(1, 3, 1, VoxelType.Wood);
+
+				// Return structure
 				return voxelGrid;
 
 			// Blueprint block
 			default:
+				// Create grid
 				voxelGrid = new VoxelGrid(3, 3, 3);
+
+				// Write blueprint cube
 				for (int x = 0; x < 3; x++)
 					for (int y = 0; y < 3; y++)
 						for (int z = 0; z < 0; z++)
 							voxelGrid.WriteVoxel(x, y, z, VoxelType.Blueprint);
+				
+				// Return structure
 				return voxelGrid;
 		}
 	}

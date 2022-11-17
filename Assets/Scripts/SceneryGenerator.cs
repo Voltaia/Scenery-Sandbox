@@ -27,7 +27,7 @@ public class SceneryGenerator : MonoBehaviour
 	private FloraGenerator floraGenerator;
 
 	// Start is called before the first frame update
-	private void Start()
+	private void Awake()
 	{
 		// Create a new voxel grid
 		voxelGrid = new VoxelGrid(48, 48, 48);

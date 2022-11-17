@@ -30,16 +30,9 @@ public class VoxelGrid
 		// Loop through all dimensions and create air voxels
 		voxels = new VoxelType[width, height, length];
 		for (int x = 0; x < width; x++)
-		{
 			for (int y = 0; y < height; y++)
-			{
 				for (int z = 0; z < length; z++)
-				{
-
 					voxels[x, y, z] = VoxelType.Air;
-				}
-			}
-		}
 	}
 
 	// Write a voxel with coordinates
@@ -54,9 +47,7 @@ public class VoxelGrid
 	{
 		// Loop through the positions of the sphere
 		for (int x = centerX - radiusPlus; x <= centerX + radiusPlus; x++)
-		{
 			for (int y = centerY - radiusPlus; y <= centerY + radiusPlus; y++)
-			{
 				for (int z = centerZ - radiusPlus; z <= centerZ + radiusPlus; z++)
 				{
 					// Check distance and write if within radius
@@ -65,8 +56,26 @@ public class VoxelGrid
 						&& GetVoxelDistance(centerX, centerY, centerZ, x, y, z) < radiusPlus
 					) WriteVoxel(x, y, z, voxelType);
 				}
-			}
-		}
+	}
+
+	// Write a different voxel grid to this voxel grid
+	public void WriteVoxelGrid(VoxelGrid voxelGrid, int cornerX, int cornerY, int cornerZ, bool overwriteSolids)
+	{
+		// Loop through dimension
+		for (int copyX = 0; copyX < voxelGrid.width; copyX++)
+			for (int copyY = 0; copyY < voxelGrid.height; copyY++)
+				for (int copyZ = 0; copyZ < voxelGrid.length; copyZ++)
+				{
+					// Get coordinates to copy to
+					int writeX = cornerX + copyX;
+					int writeY = cornerY + copyY;
+					int writeZ = cornerZ + copyZ;
+
+					// Copy
+					if (IsOutOfBounds(writeX, writeY, writeZ)) continue;
+					if (!overwriteSolids && ReadVoxel(writeX, writeY, writeZ) != VoxelType.Air) continue;
+					WriteVoxel(writeX, writeY, writeZ, voxelGrid.ReadVoxel(copyX, copyY, copyZ));
+				}
 	}
 
 	// Get distance between voxel positions

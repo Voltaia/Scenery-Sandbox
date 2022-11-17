@@ -72,7 +72,14 @@ public class FloraGenerator
 			if (positionAcceptable)
 			{
 				// Place it
-				voxelGrid.WriteVoxel(spawnX, spawnY, spawnZ, VoxelType.Wood);
+				VoxelGrid voxelGridToPlace = VoxelStructures.GetStructure(StructureType.Tree);
+				voxelGrid.WriteVoxelGrid(
+					voxelGridToPlace,
+					spawnX - (voxelGridToPlace.width / 2),
+					spawnY,
+					spawnZ - (voxelGridToPlace.length / 2),
+					false
+				);
 				spawnPositions.Add(new Vector3Int(spawnX, spawnY, spawnZ));
 				floraPlaced++;
 			}

@@ -42,11 +42,18 @@ public class VoxelGrid
 		}
 	}
 
-	// Write a voxel
+	// Write a voxel with a vector position
 	public void WriteVoxel(Vector3Int position, VoxelType voxelType)
 	{
 		// Add voxel
 		voxels[position.x, position.y, position.z] = voxelType;
+	}
+
+	// Write a voxel with coordinates
+	public void WriteVoxel(int x, int y, int z, VoxelType voxelType)
+	{
+		// Add voxel
+		voxels[x, y, z] = voxelType;
 	}
 
 	// Write a sphere shape

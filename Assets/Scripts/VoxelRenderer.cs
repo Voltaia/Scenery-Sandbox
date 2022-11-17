@@ -89,9 +89,7 @@ public class VoxelRenderer : MonoBehaviour
 
 		// Loop through all dimensions
 		for (int x = 0; x < voxelGrid.width; x++)
-		{
 			for (int y = 0; y < voxelGrid.height; y++)
-			{
 				for (int z = 0; z < voxelGrid.length; z++)
 				{
 					// Get the voxel
@@ -100,36 +98,65 @@ public class VoxelRenderer : MonoBehaviour
 					// If the voxel is air itself there is no reason to create a quad
 					if (voxelType == VoxelType.Air) continue;
 
-					// Get voxel position
-					Vector3Int voxelPosition = new Vector3Int(x, y, z);
+					// Add a normal quad cube
+					AddQuadCube(x, y, z, voxelType, false);
 
-					// If there is air on a side of the voxel, place a quad
-					if (x - 1 < 0 || voxelGrid.ReadVoxel(x - 1, y, z) == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Left);
-					if (x + 1 >= voxelGrid.width || voxelGrid.ReadVoxel(x + 1, y, z) == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Right);
-					if (y + 1 >= voxelGrid.height || voxelGrid.ReadVoxel(x, y + 1, z) == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Top);
-					if (y - 1 < 0 || voxelGrid.ReadVoxel(x, y - 1, z) == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Bottom);
-					if (z - 1 < 0 || voxelGrid.ReadVoxel(x, y, z - 1) == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Front);
-					if (z + 1 >= voxelGrid.length || voxelGrid.ReadVoxel(x, y, z + 1) == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Back);
+					// Add an inverted quad cube if it has transparency
+					bool hasTransparency = voxelsData[(int)voxelType].hasTransparency;
+					if (hasTransparency) AddQuadCube(x, y, z, voxelType, true);
 				}
-			}
-		}
 
 		// Apply changes
 		RefreshMesh();
 	}
 
-	// Refresh the mesh
-	private void RefreshMesh()
+	// Add a quad cube
+	private void AddQuadCube(int x, int y, int z, VoxelType voxelType, bool invertFaces)
 	{
-		mesh.Clear();
-		mesh.vertices = vertices.ToArray();
-		mesh.triangles = triangles.ToArray();
-		mesh.uv = uvCoordinates.ToArray();
-		mesh.RecalculateNormals();
+		// Get voxel position TEMPORARY REPLACE VECTOR3INTS
+		Vector3Int voxelPosition = new Vector3Int(x, y, z);
+
+		// Check left
+		if (invertFaces || CanPlaceQuadInDirection(x - 1, y, z))
+			AddQuad(voxelPosition, voxelType, VoxelSide.Left, invertFaces);
+
+		// Check right
+		if (invertFaces || CanPlaceQuadInDirection(x + 1, y, z))
+			AddQuad(voxelPosition, voxelType, VoxelSide.Right, invertFaces);
+
+		// Check up
+		if (invertFaces || CanPlaceQuadInDirection(x, y + 1, z))
+			AddQuad(voxelPosition, voxelType, VoxelSide.Top, invertFaces);
+
+		// Check down
+		if (invertFaces || CanPlaceQuadInDirection(x, y - 1, z))
+			AddQuad(voxelPosition, voxelType, VoxelSide.Bottom, invertFaces);
+
+		// Check backwards
+		if (invertFaces || CanPlaceQuadInDirection(x, y, z - 1))
+			AddQuad(voxelPosition, voxelType, VoxelSide.Front, invertFaces);
+
+		// Check forwards
+		if (invertFaces || CanPlaceQuadInDirection(x, y, z + 1))
+			AddQuad(voxelPosition, voxelType, VoxelSide.Back, invertFaces);
+	}
+
+	// Makes several checks to see if it is okay to place a quad
+	private bool CanPlaceQuadInDirection(int adjacentX, int adjacentY, int adjacentZ)
+	{
+		// Check if edge of grid
+		bool edgeOfGrid = voxelGrid.IsOutOfBounds(adjacentX, adjacentY, adjacentZ);
+		if (edgeOfGrid) return true;
+
+		// Make checks for open air
+		VoxelType adjacentVoxelType = voxelGrid.ReadVoxel(adjacentX, adjacentY, adjacentZ);
+		bool openAir = adjacentVoxelType == VoxelType.Air;
+		bool adjacentVoxelTransparency = voxelsData[(int)adjacentVoxelType].hasTransparency;
+		return openAir || adjacentVoxelTransparency;
 	}
 
 	// Add a quad to the triangles and vertices
-	private void AddQuad(VoxelType voxelType, Vector3Int position, VoxelSide side)
+	private void AddQuad(Vector3Int position, VoxelType voxelType, VoxelSide side, bool invertFace)
 	{
 		// Set up
 		int vertexStartingIndex = vertices.Count;
@@ -184,13 +211,26 @@ public class VoxelRenderer : MonoBehaviour
 		// Add vertices
 		foreach (int corner in faceCorners) vertices.Add(position + cornerOffsets[corner]);
 
-		// Add triangles
-		triangles.AddRange(new int[]
+		// Check if face is inverted
+		if (!invertFace)
 		{
-			vertexStartingIndex + 0, vertexStartingIndex + 1, vertexStartingIndex + 2, // First triangle
-			vertexStartingIndex + 3, vertexStartingIndex + 2, vertexStartingIndex + 1 // Second triangle
-		});
-
+			// Add triangles on the outside
+			triangles.AddRange(new int[]
+			{
+				vertexStartingIndex + 0, vertexStartingIndex + 1, vertexStartingIndex + 2, // First triangle
+				vertexStartingIndex + 3, vertexStartingIndex + 2, vertexStartingIndex + 1 // Second triangle
+			});
+		}
+		else
+		{
+			// Add triangles on the inside
+			triangles.AddRange(new int[]
+			{
+				vertexStartingIndex + 2, vertexStartingIndex + 1, vertexStartingIndex + 0, // First triangle
+				vertexStartingIndex + 1, vertexStartingIndex + 2, vertexStartingIndex + 3 // Second triangle
+			});
+		}
+		
 		// Add UV coordinates
 		float textureUnit = 1.0f / texturesBlockWidth;
 		uvCoordinates.AddRange(new Vector2[]{
@@ -199,5 +239,15 @@ public class VoxelRenderer : MonoBehaviour
 			uvStartCoordinates + new Vector2(textureUnit, 0.0f),
 			uvStartCoordinates + new Vector2(textureUnit, textureUnit),
 		});
+	}
+
+	// Refresh the mesh
+	private void RefreshMesh()
+	{
+		mesh.Clear();
+		mesh.vertices = vertices.ToArray();
+		mesh.triangles = triangles.ToArray();
+		mesh.uv = uvCoordinates.ToArray();
+		mesh.RecalculateNormals();
 	}
 }

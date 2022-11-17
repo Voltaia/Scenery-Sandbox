@@ -95,7 +95,7 @@ public class VoxelRenderer : MonoBehaviour
 				for (int z = 0; z < voxelGrid.length; z++)
 				{
 					// Get the voxel
-					VoxelType voxelType = voxelGrid.voxels[x, y, z];
+					VoxelType voxelType = voxelGrid.ReadVoxel(x, y, z);
 
 					// If the voxel is air itself there is no reason to create a quad
 					if (voxelType == VoxelType.Air) continue;
@@ -104,12 +104,12 @@ public class VoxelRenderer : MonoBehaviour
 					Vector3Int voxelPosition = new Vector3Int(x, y, z);
 
 					// If there is air on a side of the voxel, place a quad
-					if (x - 1 < 0 || voxelGrid.voxels[x - 1, y, z] == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Left);
-					if (x + 1 >= voxelGrid.width || voxelGrid.voxels[x + 1, y, z] == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Right);
-					if (y + 1 >= voxelGrid.height || voxelGrid.voxels[x, y + 1, z] == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Top);
-					if (y - 1 < 0 || voxelGrid.voxels[x, y - 1, z] == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Bottom);
-					if (z - 1 < 0 || voxelGrid.voxels[x, y, z - 1] == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Front);
-					if (z + 1 >= voxelGrid.length || voxelGrid.voxels[x, y, z + 1] == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Back);
+					if (x - 1 < 0 || voxelGrid.ReadVoxel(x - 1, y, z) == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Left);
+					if (x + 1 >= voxelGrid.width || voxelGrid.ReadVoxel(x + 1, y, z) == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Right);
+					if (y + 1 >= voxelGrid.height || voxelGrid.ReadVoxel(x, y + 1, z) == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Top);
+					if (y - 1 < 0 || voxelGrid.ReadVoxel(x, y - 1, z) == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Bottom);
+					if (z - 1 < 0 || voxelGrid.ReadVoxel(x, y, z - 1) == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Front);
+					if (z + 1 >= voxelGrid.length || voxelGrid.ReadVoxel(x, y, z + 1) == VoxelType.Air) AddQuad(voxelType, voxelPosition, VoxelSide.Back);
 				}
 			}
 		}

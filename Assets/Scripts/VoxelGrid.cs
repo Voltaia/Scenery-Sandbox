@@ -7,7 +7,7 @@ using UnityEngine;
 public class VoxelGrid
 {
 	// Class variables
-	public VoxelType[,,] voxels;
+	private VoxelType[,,] voxels;
 	public readonly int width;
 	public readonly int height;
 	public readonly int length;
@@ -48,8 +48,6 @@ public class VoxelGrid
 		// Add voxel
 		voxels[x, y, z] = voxelType;
 	}
-	public void WriteVoxel(Vector3Int position, VoxelType voxelType)
-	{ WriteVoxel(position.x, position.y, position.z, voxelType); }
 
 	// Write a sphere shape
 	public void WriteSphere(int centerX, int centerY, int centerZ, int radiusPlus, VoxelType voxelType)
@@ -70,20 +68,18 @@ public class VoxelGrid
 			}
 		}
 	}
-	public void WriteSphere(Vector3Int centerPosition, int radiusPlus, VoxelType voxelType)
-	{ WriteSphere(centerPosition.x, centerPosition.y, centerPosition.z, radiusPlus, voxelType); }
 
 	// Get distance between voxel positions
-	public float GetVoxelDistance(float x1, float y1, float z1, float x2, float y2, float z2)
+	public static float GetVoxelDistance(float x1, float y1, float z1, float x2, float y2, float z2)
 	{
 		return Mathf.Sqrt(Mathf.Pow(x1 - x2, 2) + Mathf.Pow(y1 - y2, 2) + Mathf.Pow(z1 - z2, 2));
 	}
 
 	// Read a voxel
-	public VoxelType ReadVoxel(Vector3Int position)
+	public VoxelType ReadVoxel(int x, int y, int z)
 	{
 		// Read voxel
-		return voxels[position.x, position.y, position.z];
+		return voxels[x, y, z];
 	}
 
 	// Check if position is out of bounds
@@ -93,6 +89,4 @@ public class VoxelGrid
 			|| y < 0 || y >= height
 			|| z < 0 || z >= length;
 	}
-	public bool IsOutOfBounds(Vector3Int position)
-	{ return IsOutOfBounds(position.x, position.y, position.z); }
 }

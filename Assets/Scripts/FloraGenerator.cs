@@ -36,15 +36,17 @@ public class FloraGenerator
 		while (floraPlaced < floraToPlace)
 		{
 			// Get random position
-			Vector3Int newSpawnPosition = new Vector3Int(Random.Range(0, voxelGrid.width), -1, Random.Range(0, voxelGrid.length));
+			int spawnX = Random.Range(0, voxelGrid.width);
+			int spawnY = voxelGrid.height;
+			int spawnZ = Random.Range(0, voxelGrid.length);
 
 			// Check if reasonable distance from other spawn positions
 			bool positionAcceptable = true;
 			foreach (Vector3Int spawnPosition in spawnPositions)
 			{
-				if (Vector3Int.Distance(
-					newSpawnPosition,
-					new Vector3Int(spawnPosition.x, -1, spawnPosition.z)
+				if(VoxelGrid.GetVoxelDistance(
+					spawnX, -1, spawnZ,
+					spawnPosition.x, -1, spawnPosition.z
 				) <= Spacing) positionAcceptable = false;
 			}
 
@@ -55,14 +57,13 @@ public class FloraGenerator
 				positionAcceptable = false;
 
 				// Check if surface below is acceptable
-				newSpawnPosition.y = voxelGrid.height;
-				while (!positionAcceptable && newSpawnPosition.y >= 2)
+				while (!positionAcceptable && spawnY >= 2)
 				{
 					// Move down
-					newSpawnPosition.y--;
+					spawnY--;
 
 					// Check block below and set y as we go
-					VoxelType voxelTypeBelow = voxelGrid.ReadVoxel(newSpawnPosition + Vector3Int.down);
+					VoxelType voxelTypeBelow = voxelGrid.ReadVoxel(spawnX, spawnY - 1, spawnZ);
 					if (voxelTypeBelow != VoxelType.Air && voxelTypeBelow != VoxelType.Stone) positionAcceptable = true;
 				}
 			}
@@ -71,8 +72,8 @@ public class FloraGenerator
 			if (positionAcceptable)
 			{
 				// Place it
-				voxelGrid.WriteVoxel(newSpawnPosition, VoxelType.Wood);
-				spawnPositions.Add(newSpawnPosition);
+				voxelGrid.WriteVoxel(spawnX, spawnY, spawnZ, VoxelType.Wood);
+				spawnPositions.Add(new Vector3Int(spawnX, spawnY, spawnZ));
 				floraPlaced++;
 			}
 		}

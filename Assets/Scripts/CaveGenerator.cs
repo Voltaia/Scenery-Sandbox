@@ -70,10 +70,10 @@ public class CaveGenerator
 			Vector3Int gridPosition = VectorFloatToInt(startPosition);
 
 			// Quit creating cave if it has wondered out of bounds
-			if (voxelGrid.IsOutOfBounds(gridPosition)) return;
+			if (voxelGrid.IsOutOfBounds(gridPosition.x, gridPosition.y, gridPosition.z)) return;
 
 			// Bore segment of cave
-			voxelGrid.WriteSphere(gridPosition, Radius, VoxelType.Air);
+			voxelGrid.WriteSphere(gridPosition.x, gridPosition.y, gridPosition.z, Radius, VoxelType.Air);
 
 			// Change cave position
 			startPosition += direction;

@@ -13,7 +13,7 @@ public class FloraGenerator
 	// Class settings
 	private const float TreeSeparation = 1;
 	private const int MinimumFailures = 10;
-	private const float SearchFailureMultiplier = 2.5f;
+	private const float SearchFailureMultiplier = 50f;
 
 	// Constructor
 	public FloraGenerator(VoxelGrid voxelGrid)
@@ -33,9 +33,9 @@ public class FloraGenerator
 
 		// Find a spot
 		VoxelGrid voxelGridToPlace = VoxelStructures.GetStructure(StructureType.Tree);
-		float gridStructureRadius = Mathf.Sqrt(Mathf.Pow(voxelGridToPlace.width, 2) + Mathf.Pow(voxelGridToPlace.length, 2)) / 2.0f;
-		float gridPlacementRadius = gridStructureRadius + TreeSeparation;
-		List<Vector3Int> placementPositions = GetPlacementPositions(voxelGrid.width / 2, voxelGrid.length / 2, 64, gridPlacementRadius);
+		float structureRadius = Mathf.Sqrt(Mathf.Pow(voxelGridToPlace.width, 2) + Mathf.Pow(voxelGridToPlace.length, 2)) / 2.0f;
+		float placementRadius = structureRadius + TreeSeparation;
+		List<Vector3Int> placementPositions = GetPlacementPositions(voxelGrid.width / 2, voxelGrid.length / 2, 64, placementRadius);
 
 		// Place the flora
 		foreach (Vector3Int placementPosition in placementPositions)

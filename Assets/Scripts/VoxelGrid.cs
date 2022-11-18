@@ -61,6 +61,12 @@ public class VoxelGrid
 	// Write a different voxel grid to this voxel grid
 	public void WriteVoxelGrid(VoxelGrid voxelGrid, int cornerX, int cornerY, int cornerZ, bool overwriteSolids)
 	{
+		// Check if it will be out of bounds
+		if (
+			IsOutOfBounds(cornerX, cornerY, cornerZ)
+			|| IsOutOfBounds(cornerX + voxelGrid.width, cornerY + voxelGrid.height, cornerZ + voxelGrid.length)
+		) return;
+
 		// Loop through dimension
 		for (int copyX = 0; copyX < voxelGrid.width; copyX++)
 			for (int copyY = 0; copyY < voxelGrid.height; copyY++)
@@ -72,9 +78,8 @@ public class VoxelGrid
 					int writeZ = cornerZ + copyZ;
 
 					// Copy
-					if (IsOutOfBounds(writeX, writeY, writeZ)) return;
-					if (!overwriteSolids && ReadVoxel(writeX, writeY, writeZ) != VoxelType.Air) continue;
-					WriteVoxel(writeX, writeY, writeZ, voxelGrid.ReadVoxel(copyX, copyY, copyZ));
+					if (overwriteSolids || ReadVoxel(writeX, writeY, writeZ) == VoxelType.Air)
+						WriteVoxel(writeX, writeY, writeZ, voxelGrid.ReadVoxel(copyX, copyY, copyZ));
 				}
 	}
 

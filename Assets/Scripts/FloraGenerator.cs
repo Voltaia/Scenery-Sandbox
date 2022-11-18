@@ -8,19 +8,24 @@ public class FloraGenerator
 {
 	// Class variables
 	private VoxelGrid voxelGrid;
-	private List<Placement> forestPlacements = new List<Placement>();
+	private List<Placement> clustersPlacements = new List<Placement>();
 	private List<Placement> floraPlacements = new List<Placement>();
 
 	// Search failure settings
-	private const int MinimumFailures = 10;
+	private const int MinimumFailures = 50;
 	private const float SearchFailureMultiplier = 2.5f;
 
-	// Flora settings
+	// Cluster settings
 	private const float ForestPadding = 2.0f;
 	private const float ForestRadiusMinimum = 8.0f;
 	private const float ForestRadiusMaximum = 12.0f;
+	private const float FlowerPatchPadding = 2.0f;
+	private const float FlowerPatchRadiusMinimum = 4.0f;
+	private const float FlowerPatchRadiusMaximum = 8.0f;
+
+	// Flora settings
 	private const float TreePadding = 0.25f;
-	private const float FlowerPadding = 2.0f;
+	private const float FlowerPadding = 0.75f;
 
 	// Constructor
 	public FloraGenerator(VoxelGrid voxelGrid)
@@ -36,13 +41,13 @@ public class FloraGenerator
 		Random.InitState(seed);
 
 		// Reset placements
-		forestPlacements.Clear();
+		clustersPlacements.Clear();
 		floraPlacements.Clear();
 
 		// Get forests
 		float forestRadiusAverage = ForestRadiusMinimum + (ForestRadiusMaximum - ForestRadiusMinimum);
 		List<Vector3Int> forestPositions = GetPlacementPositions(
-			ref forestPlacements,
+			ref clustersPlacements,
 			voxelGrid.width / 2, voxelGrid.length / 2,
 			voxelGrid.surfaceWingspan, forestRadiusAverage + ForestPadding,
 			false
@@ -52,52 +57,44 @@ public class FloraGenerator
 		foreach (Vector3Int forestPosition in forestPositions)
 		{
 			float forestRadius = Random.Range(ForestRadiusMinimum, ForestRadiusMaximum);
-			WriteForest(forestPosition.x, forestPosition.z, forestRadius);
+			WriteCluster(StructureType.Tree, TreePadding, forestPosition.x, forestPosition.z, forestRadius);
 		}
 
-		// Get flowers
-		VoxelGrid flowerVoxelGrid = VoxelStructures.GetStructure(StructureType.Flower);
-		float maxDimension = Mathf.Max(flowerVoxelGrid.width, flowerVoxelGrid.length) / 2.0f;
-		float placementRadius = maxDimension + FlowerPadding;
-		List<Vector3Int> flowerPositions = GetPlacementPositions(
-			ref floraPlacements,
+		// Get flower patches
+		float flowerPatchRadiusAverage = FlowerPatchRadiusMinimum + (FlowerPatchRadiusMaximum - FlowerPatchRadiusMinimum);
+		List<Vector3Int> flowerPatchPositions = GetPlacementPositions(
+			ref clustersPlacements,
 			voxelGrid.width / 2, voxelGrid.length / 2,
-			voxelGrid.surfaceWingspan, placementRadius,
-			true
+			voxelGrid.surfaceWingspan, flowerPatchRadiusAverage + FlowerPatchPadding,
+			false
 		);
 
-		// Place the flowers
-		foreach (Vector3Int flowerPosition in flowerPositions)
+		// Place flower patches
+		foreach (Vector3Int flowerPatchPosition in flowerPatchPositions)
 		{
-			// Place it
-			voxelGrid.WriteVoxelGrid(
-				flowerVoxelGrid,
-				flowerPosition.x - (flowerVoxelGrid.width / 2),
-				flowerPosition.y,
-				flowerPosition.z - (flowerVoxelGrid.length / 2),
-				false
-			);
+			float flowerPatchRadius = Random.Range(FlowerPatchRadiusMinimum, FlowerPatchRadiusMaximum);
+			WriteCluster(StructureType.Flower, FlowerPadding, flowerPatchPosition.x, flowerPatchPosition.z, flowerPatchRadius);
 		}
 	}
 
 	// Write forest
-	private void WriteForest(int centerX, int centerZ, float radius)
+	private void WriteCluster(StructureType structureType, float padding, int centerX, int centerZ, float radius)
 	{
 		// Find open spots
-		VoxelGrid treeVoxelGrid = VoxelStructures.GetStructure(StructureType.Tree);
-		float maxDimension = Mathf.Max(treeVoxelGrid.width, treeVoxelGrid.length) / 2.0f;
-		float placementRadius = maxDimension + TreePadding;
-		List<Vector3Int> treePositions = GetPlacementPositions(ref floraPlacements, centerX, centerZ, radius, placementRadius, true);
+		VoxelGrid structure = VoxelStructures.GetStructure(structureType);
+		float maxDimension = Mathf.Max(structure.width, structure.length) / 2.0f;
+		float placementRadius = maxDimension + padding;
+		List<Vector3Int> spawnPositions = GetPlacementPositions(ref floraPlacements, centerX, centerZ, radius, placementRadius, true);
 
-		// Place the trees
-		foreach (Vector3Int treePosition in treePositions)
+		// Place the structures
+		foreach (Vector3Int spawnPosition in spawnPositions)
 		{
 			// Place it
 			voxelGrid.WriteVoxelGrid(
-				treeVoxelGrid,
-				treePosition.x - (treeVoxelGrid.width / 2),
-				treePosition.y,
-				treePosition.z - (treeVoxelGrid.length / 2),
+				structure,
+				spawnPosition.x - (structure.width / 2),
+				spawnPosition.y,
+				spawnPosition.z - (structure.length / 2),
 				false
 			);
 		}

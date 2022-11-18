@@ -24,7 +24,7 @@ public class FloraGenerator
 	private const float FlowerPatchRadiusMaximum = 8.0f;
 
 	// Flora settings
-	private const float TreePadding = 0.25f;
+	private const float TreePadding = 0.5f;
 	private const float FlowerPadding = 0.75f;
 
 	// Constructor

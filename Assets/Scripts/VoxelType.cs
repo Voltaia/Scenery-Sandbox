@@ -9,4 +9,5 @@ public enum VoxelType
 	Stone,
 	Leaves,
 	Wood,
+	Rose,
 }

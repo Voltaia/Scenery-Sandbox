@@ -7,6 +7,7 @@ using UnityEngine;
 public enum StructureType
 {
 	Tree,
+	Flower
 }
 
 // Voxel grids with structures in them and crap
@@ -42,6 +43,17 @@ public static class VoxelStructures
 				voxelGrid.WriteVoxel(1, 1, 1, VoxelType.Wood);
 				voxelGrid.WriteVoxel(1, 2, 1, VoxelType.Wood);
 				voxelGrid.WriteVoxel(1, 3, 1, VoxelType.Wood);
+
+				// Return structure
+				return voxelGrid;
+
+			// Flower structure
+			case StructureType.Flower:
+				// Create grid
+				voxelGrid = new VoxelGrid(1, 1, 1);
+
+				// Write flower
+				voxelGrid.WriteVoxel(0, 0, 0, VoxelType.Rose);
 
 				// Return structure
 				return voxelGrid;

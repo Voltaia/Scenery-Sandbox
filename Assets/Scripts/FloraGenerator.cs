@@ -20,6 +20,7 @@ public class FloraGenerator
 	private const float ForestRadiusMinimum = 8.0f;
 	private const float ForestRadiusMaximum = 12.0f;
 	private const float TreePadding = 0.25f;
+	private const float FlowerPadding = 2.0f;
 
 	// Constructor
 	public FloraGenerator(VoxelGrid voxelGrid)
@@ -53,6 +54,30 @@ public class FloraGenerator
 			float forestRadius = Random.Range(ForestRadiusMinimum, ForestRadiusMaximum);
 			WriteForest(forestPosition.x, forestPosition.z, forestRadius);
 		}
+
+		// Get flowers
+		VoxelGrid flowerVoxelGrid = VoxelStructures.GetStructure(StructureType.Flower);
+		float maxDimension = Mathf.Max(flowerVoxelGrid.width, flowerVoxelGrid.length) / 2.0f;
+		float placementRadius = maxDimension + FlowerPadding;
+		List<Vector3Int> flowerPositions = GetPlacementPositions(
+			ref floraPlacements,
+			voxelGrid.width / 2, voxelGrid.length / 2,
+			voxelGrid.surfaceWingspan, placementRadius,
+			true
+		);
+
+		// Place the flowers
+		foreach (Vector3Int flowerPosition in flowerPositions)
+		{
+			// Place it
+			voxelGrid.WriteVoxelGrid(
+				flowerVoxelGrid,
+				flowerPosition.x - (flowerVoxelGrid.width / 2),
+				flowerPosition.y,
+				flowerPosition.z - (flowerVoxelGrid.length / 2),
+				false
+			);
+		}
 	}
 
 	// Write forest
@@ -62,17 +87,17 @@ public class FloraGenerator
 		VoxelGrid treeVoxelGrid = VoxelStructures.GetStructure(StructureType.Tree);
 		float maxDimension = Mathf.Max(treeVoxelGrid.width, treeVoxelGrid.length) / 2.0f;
 		float placementRadius = maxDimension + TreePadding;
-		List<Vector3Int> placementPositions = GetPlacementPositions(ref floraPlacements, centerX, centerZ, radius, placementRadius, true);
+		List<Vector3Int> treePositions = GetPlacementPositions(ref floraPlacements, centerX, centerZ, radius, placementRadius, true);
 
-		// Place the flora
-		foreach (Vector3Int placementPosition in placementPositions)
+		// Place the trees
+		foreach (Vector3Int treePosition in treePositions)
 		{
 			// Place it
 			voxelGrid.WriteVoxelGrid(
 				treeVoxelGrid,
-				placementPosition.x - (treeVoxelGrid.width / 2),
-				placementPosition.y,
-				placementPosition.z - (treeVoxelGrid.length / 2),
+				treePosition.x - (treeVoxelGrid.width / 2),
+				treePosition.y,
+				treePosition.z - (treeVoxelGrid.length / 2),
 				false
 			);
 		}

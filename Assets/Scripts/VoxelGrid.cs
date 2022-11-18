@@ -11,6 +11,7 @@ public class VoxelGrid
 	public readonly int width;
 	public readonly int height;
 	public readonly int length;
+	public readonly float surfaceWingspan;
 
 	// Constructor
 	public VoxelGrid(int width, int height, int length)
@@ -19,6 +20,7 @@ public class VoxelGrid
 		this.width = width;
 		this.height = height;
 		this.length = length;
+		surfaceWingspan = Mathf.Sqrt(Mathf.Pow(width, 2) + Mathf.Pow(length, 2)) / 2;
 
 		// Create a new grid
 		NewGrid();

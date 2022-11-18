@@ -8,12 +8,18 @@ public class FloraGenerator
 {
 	// Class variables
 	private VoxelGrid voxelGrid;
-	private List<Placement> placements = new List<Placement>();
+	private List<Placement> forestPlacements = new List<Placement>();
+	private List<Placement> floraPlacements = new List<Placement>();
 
-	// Class settings
-	private const float TreePadding = 0.5f;
+	// Search failure settings
 	private const int MinimumFailures = 10;
-	private const float SearchFailureMultiplier = 50f;
+	private const float SearchFailureMultiplier = 2.5f;
+
+	// Flora settings
+	private const float ForestPadding = 2.0f;
+	private const float ForestRadiusMinimum = 8.0f;
+	private const float ForestRadiusMaximum = 12.0f;
+	private const float TreePadding = 0.25f;
 
 	// Constructor
 	public FloraGenerator(VoxelGrid voxelGrid)
@@ -29,30 +35,51 @@ public class FloraGenerator
 		Random.InitState(seed);
 
 		// Reset placements
-		placements.Clear();
+		forestPlacements.Clear();
+		floraPlacements.Clear();
 
-		// Find a spot
-		VoxelGrid voxelGridToPlace = VoxelStructures.GetStructure(StructureType.Tree);
-		float structureRadius = Mathf.Max(voxelGridToPlace.width, voxelGridToPlace.length) / 2.0f;
-		float placementRadius = structureRadius + TreePadding;
-		List<Vector3Int> placementPositions = GetPlacementPositions(voxelGrid.width / 2, voxelGrid.length / 2, 64, placementRadius);
+		// Get forests
+		float forestRadiusAverage = ForestRadiusMinimum + (ForestRadiusMaximum - ForestRadiusMinimum);
+		List<Vector3Int> forestPositions = GetPlacementPositions(
+			ref forestPlacements,
+			voxelGrid.width / 2, voxelGrid.length / 2,
+			voxelGrid.surfaceWingspan, forestRadiusAverage + ForestPadding,
+			false
+		);
+
+		// Place forests
+		foreach (Vector3Int forestPosition in forestPositions)
+		{
+			float forestRadius = Random.Range(ForestRadiusMinimum, ForestRadiusMaximum);
+			WriteForest(forestPosition.x, forestPosition.z, forestRadius);
+		}
+	}
+
+	// Write forest
+	private void WriteForest(int centerX, int centerZ, float radius)
+	{
+		// Find open spots
+		VoxelGrid treeVoxelGrid = VoxelStructures.GetStructure(StructureType.Tree);
+		float maxDimension = Mathf.Max(treeVoxelGrid.width, treeVoxelGrid.length) / 2.0f;
+		float placementRadius = maxDimension + TreePadding;
+		List<Vector3Int> placementPositions = GetPlacementPositions(ref floraPlacements, centerX, centerZ, radius, placementRadius, true);
 
 		// Place the flora
 		foreach (Vector3Int placementPosition in placementPositions)
 		{
 			// Place it
 			voxelGrid.WriteVoxelGrid(
-				voxelGridToPlace,
-				placementPosition.x - (voxelGridToPlace.width / 2),
+				treeVoxelGrid,
+				placementPosition.x - (treeVoxelGrid.width / 2),
 				placementPosition.y,
-				placementPosition.z - (voxelGridToPlace.length / 2),
+				placementPosition.z - (treeVoxelGrid.length / 2),
 				false
 			);
 		}
 	}
 
 	// Get spots distributed in radius
-	private List<Vector3Int> GetPlacementPositions(int centerX, int centerZ, float searchRadius, float separationRadius)
+	private List<Vector3Int> GetPlacementPositions(ref List<Placement> placementList, int centerX, int centerZ, float searchRadius, float separationRadius, bool onlyGrass)
 	{
 		// Look for spots to place
 		List<Vector3Int> openings = new List<Vector3Int>();
@@ -69,7 +96,7 @@ public class FloraGenerator
 
 			// Check if reasonable distance from other spawn positions
 			bool failedDistanceCheck = false;
-			foreach (Placement placement in placements)
+			foreach (Placement placement in placementList)
 			{
 				float distance = VoxelGrid.GetVoxelDistance(
 					openPosition.x, -1, openPosition.z,
@@ -87,7 +114,7 @@ public class FloraGenerator
 			// Check if surface below is acceptable
 			openPosition.y = voxelGrid.GetSurfaceY(openPosition.x, openPosition.z);
 			VoxelType surfaceVoxelType = voxelGrid.ReadVoxel(openPosition.x, openPosition.y, openPosition.z);
-			if (surfaceVoxelType != VoxelType.DripGrass && surfaceVoxelType != VoxelType.Grass)
+			if (onlyGrass && surfaceVoxelType != VoxelType.DripGrass && surfaceVoxelType != VoxelType.Grass)
 			{
 				// Failed surface check
 				failures++;
@@ -97,7 +124,7 @@ public class FloraGenerator
 
 			// Passed all checks, add position
 			openings.Add(openPosition);
-			placements.Add(new Placement(openPosition, separationRadius));
+			placementList.Add(new Placement(openPosition, separationRadius));
 		}
 
 		// Return open positions

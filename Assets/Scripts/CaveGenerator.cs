@@ -9,10 +9,11 @@ public class CaveGenerator
 	private VoxelGrid voxelGrid;
 
 	// Class settings
-	private const float ForkChance = 0.025f;
+	private const float BranchChance = 0.025f;
 	private const float MaxCurve = 5.0f;
+	private const float AttemptBranchingPercentage = 0.15f;
 	private const int Radius = 3;
-	private const int MinimumCaves = 1;
+	private const int MinimumCaves = 2;
 	private const int MaximumCaves = 3;
 
 	// Constructor
@@ -33,16 +34,20 @@ public class CaveGenerator
 		for (int cave = 1; cave <= caves; cave++)
 		{
 			// Get start location
-			Vector3 startPosition = new Vector3(
-				Random.Range(0, voxelGrid.width),
-				Random.Range(0, voxelGrid.height),
-				Random.Range(0, voxelGrid.length)
-			);
+			float offsetFromSide = Radius;
+			float startX = Random.Range(offsetFromSide, voxelGrid.width - offsetFromSide);
+			float startZ = Random.Range(offsetFromSide, voxelGrid.length - offsetFromSide);
+
+			// Get start height
+			float startY = (float)voxelGrid.GetSurfaceY((int)startX, (int)startZ);
+
+			// Initialize as vector
+			Vector3 startPosition = new Vector3(startX, startY, startZ);
 
 			// Get direction
 			Vector3 direction = new Vector3(
 				Random.Range(-1.0f, 1.0f),
-				Random.Range(-1.0f, 1.0f),
+				Random.Range(-0.25f, -1.0f), // We only want our starter cave to point down
 				Random.Range(-1.0f, 1.0f)
 			).normalized;
 
@@ -80,7 +85,8 @@ public class CaveGenerator
 			direction = Quaternion.AngleAxis(curveAmount, curveDirection) * direction;
 
 			// Split cave
-			if (Random.value < ForkChance)
+			bool canStartBranching = currentLength > length * AttemptBranchingPercentage;
+			if (canStartBranching && Random.value < BranchChance)
 			{
 				// Get a direction for the new cave and generate it
 				float forkAngle = Random.value < 0.5f ? -90.0f : 90.0f;

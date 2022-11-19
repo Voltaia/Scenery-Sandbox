@@ -11,3 +11,12 @@ public enum VoxelType
 	Wood,
 	Rose,
 }
+
+// Voxel rendering type
+public enum RenderMethod
+{
+	None,
+	Standard,
+	Transparent,
+	Decoration
+}

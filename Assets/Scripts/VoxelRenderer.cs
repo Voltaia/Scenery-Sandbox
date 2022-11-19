@@ -94,15 +94,16 @@ public class VoxelRenderer : MonoBehaviour
 				{
 					// Get the voxel
 					VoxelType voxelType = voxelGrid.ReadVoxel(x, y, z);
+					VoxelData voxelData = voxelsData[(int)voxelType];
 
-					// If the voxel is air itself there is no reason to create a quad
-					if (voxelType == VoxelType.Air) continue;
+					// If the voxel has no render method then there is no reason to create quads
+					if (voxelData.renderType == RenderMethod.None) continue;
 
 					// Add a normal quad cube
 					AddQuadCube(x, y, z, voxelType, false);
 
 					// Add an inverted quad cube if it has transparency
-					bool hasTransparency = voxelsData[(int)voxelType].hasTransparency;
+					bool hasTransparency = voxelsData[(int)voxelType].renderType == RenderMethod.Transparent;
 					if (hasTransparency) AddQuadCube(x, y, z, voxelType, true);
 				}
 
@@ -150,8 +151,9 @@ public class VoxelRenderer : MonoBehaviour
 
 		// Make checks for open air
 		VoxelType adjacentVoxelType = voxelGrid.ReadVoxel(adjacentX, adjacentY, adjacentZ);
-		bool openAir = adjacentVoxelType == VoxelType.Air;
-		bool adjacentVoxelTransparency = voxelsData[(int)adjacentVoxelType].hasTransparency;
+		VoxelData adjacentVoxelData = voxelsData[(int)adjacentVoxelType];
+		bool openAir = adjacentVoxelData.renderType == RenderMethod.None;
+		bool adjacentVoxelTransparency = adjacentVoxelData.renderType == RenderMethod.Transparent;
 		return openAir || adjacentVoxelTransparency;
 	}
 

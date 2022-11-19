@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3918eabae0d755d419dd60579b41c6e8, type: 3}
   m_Name: Rose
   m_EditorClassIdentifier: 
-  topTextureCoordinates: {x: 1, y: 0}
-  sideTextureCoordinates: {x: 1, y: 0}
-  bottomTextureCoordinates: {x: 1, y: 0}
-  renderType: 3
+  topTextureCoordinates: {x: 0, y: 0}
+  sideTextureCoordinates: {x: 3, y: 1}
+  bottomTextureCoordinates: {x: 3, y: 1}
+  renderType: 2

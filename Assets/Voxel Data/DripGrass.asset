@@ -15,4 +15,4 @@ MonoBehaviour:
   topTextureCoordinates: {x: 4, y: 0}
   sideTextureCoordinates: {x: 5, y: 0}
   bottomTextureCoordinates: {x: 6, y: 0}
-  renderType: 1
+  renderMethod: 1

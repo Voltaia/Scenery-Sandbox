@@ -92,15 +92,25 @@ public class VoxelMeshFactory
 					VoxelType voxelType = voxelGrid.ReadVoxel(x, y, z);
 					VoxelData voxelData = voxelsData[(int)voxelType];
 
-					// If the voxel has no render method then there is no reason to create quads
-					if (voxelData.renderType == RenderMethod.None) continue;
+					// Render methods
+					switch (voxelData.renderMethod)
+					{
+						// Standard
+						case RenderMethod.Standard:
+							// Add a normal quad cube
+							AddQuadCube(x, y, z, voxelType, false);
+							break;
 
-					// Add a normal quad cube
-					AddQuadCube(x, y, z, voxelType, false);
+						// Transparent
+						case RenderMethod.Transparent:
+							// Add a normal quad cube
+							AddQuadCube(x, y, z, voxelType, false);
 
-					// Add an inverted quad cube if it has transparency
-					bool hasTransparency = voxelsData[(int)voxelType].renderType == RenderMethod.Transparent;
-					if (hasTransparency) AddQuadCube(x, y, z, voxelType, true);
+							// Add an inverted quad cube
+							bool hasTransparency = voxelsData[(int)voxelType].renderMethod == RenderMethod.Transparent;
+							if (hasTransparency) AddQuadCube(x, y, z, voxelType, true);
+							break;
+					}
 				}
 
 		// Apply changes
@@ -151,8 +161,8 @@ public class VoxelMeshFactory
 		// Make checks for open air
 		VoxelType adjacentVoxelType = voxelGrid.ReadVoxel(adjacentX, adjacentY, adjacentZ);
 		VoxelData adjacentVoxelData = voxelsData[(int)adjacentVoxelType];
-		bool openAir = adjacentVoxelData.renderType == RenderMethod.None;
-		bool adjacentVoxelTransparency = adjacentVoxelData.renderType == RenderMethod.Transparent;
+		bool openAir = adjacentVoxelData.renderMethod == RenderMethod.None;
+		bool adjacentVoxelTransparency = adjacentVoxelData.renderMethod == RenderMethod.Transparent;
 		return openAir || adjacentVoxelTransparency;
 	}
 

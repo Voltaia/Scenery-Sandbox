@@ -3,6 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+// HEY
+// LISTEN
+// THIS CLASS NEEDS A GOOD, OLD FASHIONED, REFACTOR
+
 // Generates voxel meshes
 public class VoxelMeshFactory
 {
@@ -10,7 +15,8 @@ public class VoxelMeshFactory
 	private VoxelGrid voxelGrid;
 	private int texturesBlockWidth;
 	private VoxelData[] voxelsData;
-	private Color[] pixels;
+	private Texture2D texture2D;
+	private Color32[] pixels;
 	private Mesh mesh = new Mesh();
 	private List<Vector3> vertices = new List<Vector3>();
 	private List<int> triangles = new List<int>();
@@ -71,8 +77,8 @@ public class VoxelMeshFactory
 		this.voxelGrid = voxelGrid;
 		this.texturesBlockWidth = texturesBlockWidth;
 		this.voxelsData = voxelsData;
-		pixels = texture2D.GetPixels();
-		Debug.Log(Mathf.Sqrt(pixels.Length));
+		this.texture2D = texture2D;
+		pixels = texture2D.GetPixels32();
 
 		// Increase max vertex count
 		mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
@@ -117,6 +123,7 @@ public class VoxelMeshFactory
 						// Decoration
 						case RenderMethod.Decoration:
 							// Add a decoration
+							AddDecoration(x, y, z, voxelType);
 							break;
 					}
 				}
@@ -126,6 +133,49 @@ public class VoxelMeshFactory
 
 		// Return mesh
 		return mesh;
+	}
+
+	// Add decoration
+	private void AddDecoration(int x, int y, int z, VoxelType voxelType)
+	{
+		// THIS BIT SHOULD MAYBE NOT BE A PART OF VOXEL MESH FACTORY? ALSO THIS IS VERY MESSY CODE
+		Debug.Log("Adding decoration:");
+
+		// Get texture map width
+		int texturesPixelWidth = (int)Mathf.Sqrt(pixels.Length);
+		int textureWidth = texturesPixelWidth / texturesBlockWidth;
+
+		// Create voxel grid
+		VoxelGrid decorationVoxelGrid = new VoxelGrid(textureWidth, textureWidth, textureWidth);
+
+		// Get texture position
+		VoxelData voxelData = voxelsData[(int)voxelType];
+		int cursorStartX = voxelData.sideTextureCoordinates.x * textureWidth;
+		int cursorStartY = voxelData.sideTextureCoordinates.y * textureWidth;
+		Debug.Log("cursorStartX:" + cursorStartX);
+		Debug.Log("cursorStartY:" + cursorStartY);
+		for (int cursorX = cursorStartX; cursorX < cursorStartX + textureWidth; cursorX++)
+			for (int cursorY = cursorStartY; cursorY < cursorStartY + textureWidth; cursorY++)
+			{
+				Debug.Log("cursorX: " + cursorX);
+				Debug.Log("cursorY: " + cursorY);
+				int pixelIndex = cursorX + cursorY * texturesPixelWidth;
+				Debug.Log("pixelIndex: " + pixelIndex);
+				Color color = pixels[pixelIndex];
+				Vector3Int writePosition = new Vector3Int(cursorX - cursorStartX, cursorY - cursorStartY, 8);
+				Debug.Log("writePosition: " + writePosition);
+				if (color.a > 0.5f) decorationVoxelGrid.WriteVoxel(writePosition.x, writePosition.y, writePosition.z, VoxelType.Blueprint);
+				Debug.Log("Color: " + color);
+			}
+
+		GameObject decorationGameObject = new GameObject("Decoration");
+		VoxelRenderer voxelRenderer = decorationGameObject.AddComponent<VoxelRenderer>();
+		voxelRenderer.texturesBlockWidth = texturesBlockWidth;
+		voxelRenderer.texture2D = texture2D;
+		voxelRenderer.voxelsData = voxelsData;
+		voxelRenderer.voxelGrid = decorationVoxelGrid;
+		voxelRenderer.transform.position = new Vector3(x, y, z);
+		voxelRenderer.Refresh();
 	}
 
 	// Add a quad cube

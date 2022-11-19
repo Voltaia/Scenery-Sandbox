@@ -67,7 +67,7 @@ public class SceneryGenerator : MonoBehaviour
 		if (generateFlora) floraGenerator.WriteFlora(seed);
 
 		// Apply changes
-		voxelRenderer.GenerateMesh();
+		voxelRenderer.Refresh();
 	}
 
 	// Randomize seed

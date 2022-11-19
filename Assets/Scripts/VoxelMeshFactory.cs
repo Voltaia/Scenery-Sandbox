@@ -10,6 +10,7 @@ public class VoxelMeshFactory
 	private VoxelGrid voxelGrid;
 	private int texturesBlockWidth;
 	private VoxelData[] voxelsData;
+	private Color[] pixels;
 	private Mesh mesh = new Mesh();
 	private List<Vector3> vertices = new List<Vector3>();
 	private List<int> triangles = new List<int>();
@@ -64,12 +65,14 @@ public class VoxelMeshFactory
 	}
 
 	// Constructor
-	public VoxelMeshFactory(VoxelGrid voxelGrid, int texturesBlockWidth, VoxelData[] voxelsData)
+	public VoxelMeshFactory(VoxelGrid voxelGrid, int texturesBlockWidth, VoxelData[] voxelsData, Texture2D texture2D)
 	{
 		// Fill in variables
 		this.voxelGrid = voxelGrid;
 		this.texturesBlockWidth = texturesBlockWidth;
 		this.voxelsData = voxelsData;
+		pixels = texture2D.GetPixels();
+		Debug.Log(Mathf.Sqrt(pixels.Length));
 
 		// Increase max vertex count
 		mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
@@ -109,6 +112,11 @@ public class VoxelMeshFactory
 							// Add an inverted quad cube
 							bool hasTransparency = voxelsData[(int)voxelType].renderMethod == RenderMethod.Transparent;
 							if (hasTransparency) AddQuadCube(x, y, z, voxelType, true);
+							break;
+
+						// Decoration
+						case RenderMethod.Decoration:
+							// Add a decoration
 							break;
 					}
 				}

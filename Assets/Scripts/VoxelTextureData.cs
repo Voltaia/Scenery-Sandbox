@@ -1,6 +1,16 @@
 // Dependencies
 using UnityEngine;
 
+// Voxel rendering methods
+public enum RenderMethod
+{
+	None,
+	Standard,
+	Colored,
+	Transparent,
+	Decoration
+}
+
 // Holds texture values for voxels
 [CreateAssetMenu(fileName = "Voxel Texture Data", menuName = "Voxel Texture Data")]
 public class VoxelTextureData : ScriptableObject

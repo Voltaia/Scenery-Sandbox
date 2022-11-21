@@ -135,8 +135,8 @@ public class FloraGenerator
 
 			// Check if surface below is acceptable
 			openPosition.y = voxelGrid.GetSurfaceY(openPosition.x, openPosition.z);
-			VoxelType surfaceVoxelType = voxelGrid.ReadVoxel(openPosition.x, openPosition.y, openPosition.z);
-			if (onlyGrass && surfaceVoxelType != VoxelType.DripGrass && surfaceVoxelType != VoxelType.Grass)
+			Voxel surfaceVoxel = voxelGrid.ReadVoxel(openPosition.x, openPosition.y, openPosition.z);
+			if (onlyGrass && surfaceVoxel.type != VoxelType.DripGrass && surfaceVoxel.type != VoxelType.Grass)
 			{
 				// Failed surface check
 				failures++;

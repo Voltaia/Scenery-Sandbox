@@ -7,7 +7,7 @@ using UnityEngine;
 public class VoxelGrid
 {
 	// Class variables
-	private VoxelType[,,] voxels;
+	private Voxel[,,] voxels;
 	public readonly int width;
 	public readonly int height;
 	public readonly int length;
@@ -30,22 +30,22 @@ public class VoxelGrid
 	public void NewGrid()
 	{
 		// Loop through all dimensions and create air voxels
-		voxels = new VoxelType[width, height, length];
+		voxels = new Voxel[width, height, length];
 		for (int x = 0; x < width; x++)
 			for (int y = 0; y < height; y++)
 				for (int z = 0; z < length; z++)
-					voxels[x, y, z] = VoxelType.Air;
+					voxels[x, y, z] = new Voxel();
 	}
 
 	// Write a voxel with coordinates
-	public void WriteVoxel(int x, int y, int z, VoxelType voxelType)
+	public void WriteVoxel(int x, int y, int z, Voxel voxel)
 	{
 		// Add voxel
-		voxels[x, y, z] = voxelType;
+		voxels[x, y, z] = voxel;
 	}
 
 	// Write a sphere shape
-	public void WriteSphere(int centerX, int centerY, int centerZ, int radiusPlus, VoxelType voxelType)
+	public void WriteSphere(int centerX, int centerY, int centerZ, int radiusPlus, Voxel voxel)
 	{
 		// Loop through the positions of the sphere
 		for (int x = centerX - radiusPlus; x <= centerX + radiusPlus; x++)
@@ -56,7 +56,7 @@ public class VoxelGrid
 					if (
 						!IsOutOfBounds(x, y, z)
 						&& GetVoxelDistance(centerX, centerY, centerZ, x, y, z) < radiusPlus
-					) WriteVoxel(x, y, z, voxelType);
+					) WriteVoxel(x, y, z, voxel);
 				}
 	}
 
@@ -80,7 +80,7 @@ public class VoxelGrid
 					int writeZ = cornerZ + copyZ;
 
 					// Copy
-					if (overwriteSolids || ReadVoxel(writeX, writeY, writeZ) == VoxelType.Air)
+					if (overwriteSolids || ReadVoxel(writeX, writeY, writeZ).type == VoxelType.Air)
 						WriteVoxel(writeX, writeY, writeZ, voxelGrid.ReadVoxel(copyX, copyY, copyZ));
 				}
 	}
@@ -92,7 +92,7 @@ public class VoxelGrid
 	}
 
 	// Read a voxel
-	public VoxelType ReadVoxel(int x, int y, int z)
+	public Voxel ReadVoxel(int x, int y, int z)
 	{
 		// Read voxel
 		return voxels[x, y, z];
@@ -110,8 +110,8 @@ public class VoxelGrid
 			surfaceY--;
 
 			// Check block below and set y as we go
-			VoxelType voxelType = ReadVoxel(x, surfaceY, z);
-			if (voxelType != VoxelType.Air) surfaceFound = true;
+			Voxel voxel = ReadVoxel(x, surfaceY, z);
+			if (voxel.type != VoxelType.Air) surfaceFound = true;
 		}
 
 		// Return surface height

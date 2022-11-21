@@ -28,21 +28,21 @@ public static class VoxelStructures
 				voxelGrid = new VoxelGrid(3, 5, 3);
 
 				// Write leaves
-				voxelGrid.WriteVoxel(0, 4, 1, VoxelType.Leaves);
-				voxelGrid.WriteVoxel(2, 4, 1, VoxelType.Leaves);
-				voxelGrid.WriteVoxel(1, 4, 0, VoxelType.Leaves);
-				voxelGrid.WriteVoxel(1, 4, 1, VoxelType.Leaves);
-				voxelGrid.WriteVoxel(1, 4, 2, VoxelType.Leaves);
+				voxelGrid.WriteVoxel(0, 4, 1, new Voxel(VoxelType.Leaves));
+				voxelGrid.WriteVoxel(2, 4, 1, new Voxel(VoxelType.Leaves));
+				voxelGrid.WriteVoxel(1, 4, 0, new Voxel(VoxelType.Leaves));
+				voxelGrid.WriteVoxel(1, 4, 1, new Voxel(VoxelType.Leaves));
+				voxelGrid.WriteVoxel(1, 4, 2, new Voxel(VoxelType.Leaves));
 				for (int x = 0; x < 3; x++)
 					for (int y = 2; y < 4; y++)
 						for (int z = 0; z < 3; z++)
-							voxelGrid.WriteVoxel(x, y, z, VoxelType.Leaves);
+							voxelGrid.WriteVoxel(x, y, z, new Voxel(VoxelType.Leaves));
 
 				// Write trunk
-				voxelGrid.WriteVoxel(1, 0, 1, VoxelType.Wood);
-				voxelGrid.WriteVoxel(1, 1, 1, VoxelType.Wood);
-				voxelGrid.WriteVoxel(1, 2, 1, VoxelType.Wood);
-				voxelGrid.WriteVoxel(1, 3, 1, VoxelType.Wood);
+				voxelGrid.WriteVoxel(1, 0, 1, new Voxel(VoxelType.Wood));
+				voxelGrid.WriteVoxel(1, 1, 1, new Voxel(VoxelType.Wood));
+				voxelGrid.WriteVoxel(1, 2, 1, new Voxel(VoxelType.Wood));
+				voxelGrid.WriteVoxel(1, 3, 1, new Voxel(VoxelType.Wood));
 
 				// Return structure
 				return voxelGrid;
@@ -53,7 +53,7 @@ public static class VoxelStructures
 				voxelGrid = new VoxelGrid(1, 1, 1);
 
 				// Write flower
-				voxelGrid.WriteVoxel(0, 0, 0, VoxelType.Rose);
+				voxelGrid.WriteVoxel(0, 0, 0, new Voxel(VoxelType.Rose));
 
 				// Return structure
 				return voxelGrid;
@@ -67,7 +67,7 @@ public static class VoxelStructures
 				for (int x = 0; x < 3; x++)
 					for (int y = 0; y < 3; y++)
 						for (int z = 0; z < 0; z++)
-							voxelGrid.WriteVoxel(x, y, z, VoxelType.Blueprint);
+							voxelGrid.WriteVoxel(x, y, z, new Voxel(VoxelType.Blueprint));
 				
 				// Return structure
 				return voxelGrid;

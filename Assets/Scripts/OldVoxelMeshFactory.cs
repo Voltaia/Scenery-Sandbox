@@ -98,8 +98,8 @@ public class OldVoxelMeshFactory
 				for (int z = 0; z < voxelGrid.length; z++)
 				{
 					// Get the voxel
-					VoxelType voxelType = voxelGrid.ReadVoxel(x, y, z);
-					VoxelTextureData voxelData = voxelsData[(int)voxelType];
+					Voxel voxel = voxelGrid.ReadVoxel(x, y, z);
+					VoxelTextureData voxelData = voxelsData[(int)voxel.type];
 
 					// Render methods
 					switch (voxelData.renderMethod)
@@ -107,23 +107,29 @@ public class OldVoxelMeshFactory
 						// Standard
 						case RenderMethod.Standard:
 							// Add a normal quad cube
-							AddQuadCube(x, y, z, voxelType, false);
+							AddQuadCube(x, y, z, voxel.type, false);
+							break;
+
+						// Standard
+						case RenderMethod.Colored:
+							// Add a normal quad cube
+							AddQuadCube(x, y, z, voxel.type, false);
 							break;
 
 						// Transparent
 						case RenderMethod.Transparent:
 							// Add a normal quad cube
-							AddQuadCube(x, y, z, voxelType, false);
+							AddQuadCube(x, y, z, voxel.type, false);
 
 							// Add an inverted quad cube
-							bool hasTransparency = voxelsData[(int)voxelType].renderMethod == RenderMethod.Transparent;
-							if (hasTransparency) AddQuadCube(x, y, z, voxelType, true);
+							bool hasTransparency = voxelsData[(int)voxel.type].renderMethod == RenderMethod.Transparent;
+							if (hasTransparency) AddQuadCube(x, y, z, voxel.type, true);
 							break;
 
 						// Decoration
 						case RenderMethod.Decoration:
 							// Add a decoration
-							AddDecoration(x, y, z, voxelType);
+							AddDecoration(x, y, z, voxel.type);
 							break;
 					}
 				}
@@ -164,7 +170,7 @@ public class OldVoxelMeshFactory
 				Color color = pixels[pixelIndex];
 				Vector3Int writePosition = new Vector3Int(cursorX - cursorStartX, cursorY - cursorStartY, 8);
 				Debug.Log("writePosition: " + writePosition);
-				if (color.a > 0.5f) decorationVoxelGrid.WriteVoxel(writePosition.x, writePosition.y, writePosition.z, VoxelType.Blueprint);
+				if (color.a > 0.5f) decorationVoxelGrid.WriteVoxel(writePosition.x, writePosition.y, writePosition.z, new Voxel(color));
 				Debug.Log("Color: " + color);
 			}
 
@@ -217,8 +223,8 @@ public class OldVoxelMeshFactory
 		if (edgeOfGrid) return true;
 
 		// Make checks for open air
-		VoxelType adjacentVoxelType = voxelGrid.ReadVoxel(adjacentX, adjacentY, adjacentZ);
-		VoxelTextureData adjacentVoxelData = voxelsData[(int)adjacentVoxelType];
+		Voxel adjacentVoxel = voxelGrid.ReadVoxel(adjacentX, adjacentY, adjacentZ);
+		VoxelTextureData adjacentVoxelData = voxelsData[(int)adjacentVoxel.type];
 		bool openAir = adjacentVoxelData.renderMethod == RenderMethod.None;
 		bool adjacentVoxelTransparency = adjacentVoxelData.renderMethod == RenderMethod.Transparent;
 		return openAir || adjacentVoxelTransparency;

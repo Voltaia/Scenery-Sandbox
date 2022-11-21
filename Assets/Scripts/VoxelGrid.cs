@@ -104,7 +104,7 @@ public class VoxelGrid
 		// Loop until surface is found
 		int surfaceY = height;
 		bool surfaceFound = false;
-		while (!surfaceFound && surfaceY >= 0)
+		while (!surfaceFound && surfaceY > 0)
 		{
 			// Scan down
 			surfaceY--;

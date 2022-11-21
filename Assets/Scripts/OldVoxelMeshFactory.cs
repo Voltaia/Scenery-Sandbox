@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.Linq;
 
 // HEY
 // LISTEN
@@ -14,14 +14,14 @@ public class OldVoxelMeshFactory
 	// Class variables
 	private VoxelGrid voxelGrid;
 	private int texturesBlockWidth;
-	private VoxelTextureData[] voxelsData;
+	private VoxelTextureData[] voxelTexturesData;
 	private Texture2D texture2D;
 	private Color32[] pixels;
 	private Mesh mesh = new Mesh();
 	private List<Vector3> vertices = new List<Vector3>();
 	private List<int> triangles = new List<int>();
 	private List<Vector2> uvCoordinates = new List<Vector2>();
-	private List<Color32> colors = new List<Color32>();
+	private List<Color32> colors32 = new List<Color32>();
 
 	// Voxel corner positions
 	public static Vector3[] cornerOffsets = {
@@ -77,7 +77,7 @@ public class OldVoxelMeshFactory
 		// Fill in variables
 		this.voxelGrid = voxelGrid;
 		this.texturesBlockWidth = texturesBlockWidth;
-		this.voxelsData = voxelsData;
+		this.voxelTexturesData = voxelsData;
 		this.texture2D = texture2D;
 		pixels = texture2D.GetPixels32();
 
@@ -100,7 +100,7 @@ public class OldVoxelMeshFactory
 				{
 					// Get the voxel
 					Voxel voxel = voxelGrid.ReadVoxel(x, y, z);
-					VoxelTextureData voxelData = voxelsData[(int)voxel.type];
+					VoxelTextureData voxelData = voxelTexturesData[(int)voxel.type];
 
 					// Render methods
 					switch (voxelData.renderMethod)
@@ -123,7 +123,7 @@ public class OldVoxelMeshFactory
 						// Decoration
 						case RenderMethod.Decoration:
 							// Add a decoration
-							AddDecoration(x, y, z, voxel.type);
+							AddDecoration(x, y, z, voxel);
 							break;
 					}
 				}
@@ -136,7 +136,7 @@ public class OldVoxelMeshFactory
 	}
 
 	// Add decoration
-	private void AddDecoration(int x, int y, int z, VoxelType voxelType)
+	private void AddDecoration(int x, int y, int z, Voxel voxel)
 	{
 		// Get texture map width
 		int texturesPixelWidth = (int)Mathf.Sqrt(pixels.Length);
@@ -146,7 +146,7 @@ public class OldVoxelMeshFactory
 		VoxelGrid decorationVoxelGrid = new VoxelGrid(textureWidth, textureWidth, textureWidth);
 
 		// Get texture position
-		VoxelTextureData voxelData = voxelsData[(int)voxelType];
+		VoxelTextureData voxelData = voxelTexturesData[(int)voxel.type];
 		int cursorStartX = voxelData.sideTextureCoordinates.x * textureWidth;
 		int cursorStartY = voxelData.sideTextureCoordinates.y * textureWidth;
 		for (int cursorX = cursorStartX; cursorX < cursorStartX + textureWidth; cursorX++)
@@ -158,14 +158,33 @@ public class OldVoxelMeshFactory
 				if (color.a > 0.5f) decorationVoxelGrid.WriteVoxel(writePosition.x, writePosition.y, writePosition.z, new Voxel(color));
 			}
 
-		GameObject decorationGameObject = new GameObject("Decoration");
-		VoxelRenderer voxelRenderer = decorationGameObject.AddComponent<VoxelRenderer>();
-		voxelRenderer.texturesBlockWidth = texturesBlockWidth;
-		voxelRenderer.texture2D = texture2D;
-		voxelRenderer.voxelTexturesData = voxelsData;
-		voxelRenderer.voxelGrid = decorationVoxelGrid;
-		voxelRenderer.transform.position = new Vector3(x, y, z);
-		voxelRenderer.Refresh();
+		//GameObject decorationGameObject = new GameObject("Decoration");
+		//VoxelRenderer voxelRenderer = decorationGameObject.AddComponent<VoxelRenderer>();
+		//voxelRenderer.texturesBlockWidth = texturesBlockWidth;
+		//voxelRenderer.texture2D = texture2D;
+		//voxelRenderer.voxelTexturesData = voxelTexturesData;
+		//voxelRenderer.voxelGrid = decorationVoxelGrid;
+		//voxelRenderer.transform.position = new Vector3(x, y, z);
+		//voxelRenderer.Refresh();
+
+		//CombineInstance[] combineInstances = new CombineInstance[1];
+		Mesh decorationMesh = new OldVoxelMeshFactory(decorationVoxelGrid, texturesBlockWidth, voxelTexturesData, texture2D).GenerateMesh();
+		//combineInstances[0].mesh = decorationMesh;
+		//combineInstances[0].transform = Matrix4x4.Translate(new Vector3(x, y, z));
+		//mesh.CombineMeshes(combineInstances, true, true, true);
+
+		List<Vector3> decorationVertices = new List<Vector3>();
+		decorationVertices.AddRange(decorationMesh.vertices);
+		for (int vertexIndex = 0; vertexIndex < decorationVertices.Count; vertexIndex++)
+		{
+			Debug.Log("1: " + decorationVertices[vertexIndex]);
+			decorationVertices[vertexIndex] += new Vector3(x, y, z);
+			Debug.Log("2: " + decorationVertices[vertexIndex]);
+		}
+		vertices.AddRange(decorationVertices);
+		triangles.AddRange(decorationMesh.triangles);
+		uvCoordinates.AddRange(decorationMesh.uv);
+		colors32.AddRange(decorationMesh.colors32);
 	}
 
 	// Add a quad cube
@@ -208,7 +227,7 @@ public class OldVoxelMeshFactory
 
 		// Make checks for open air
 		Voxel adjacentVoxel = voxelGrid.ReadVoxel(adjacentX, adjacentY, adjacentZ);
-		VoxelTextureData adjacentVoxelData = voxelsData[(int)adjacentVoxel.type];
+		VoxelTextureData adjacentVoxelData = voxelTexturesData[(int)adjacentVoxel.type];
 		bool openAir = adjacentVoxelData.renderMethod == RenderMethod.None;
 		bool adjacentVoxelTransparency = adjacentVoxelData.renderMethod == RenderMethod.Transparent;
 		return openAir || adjacentVoxelTransparency;
@@ -222,7 +241,7 @@ public class OldVoxelMeshFactory
 
 		// Get the UV coordinates for each side of the voxel
 		int blockTypeIndex = (int)voxel.type;
-		VoxelTextureData voxelData = voxelsData[blockTypeIndex];
+		VoxelTextureData voxelData = voxelTexturesData[blockTypeIndex];
 		Vector2 uvSideCoordinates = (Vector2)voxelData.sideTextureCoordinates / texturesBlockWidth;
 		Vector2 uvTopCoordinates = (Vector2)voxelData.topTextureCoordinates / texturesBlockWidth;
 		Vector2 uvBottomCoordinates = (Vector2)voxelData.bottomTextureCoordinates / texturesBlockWidth;
@@ -271,8 +290,7 @@ public class OldVoxelMeshFactory
 		foreach (int corner in faceCorners)
 		{
 			vertices.Add(position + cornerOffsets[corner]);
-			if (voxel.type == VoxelType.Blank) Debug.Log(voxel.color);
-			colors.Add(voxel.color);
+			colors32.Add(voxel.color);
 		}
 
 		// Check if face is inverted
@@ -312,7 +330,7 @@ public class OldVoxelMeshFactory
 		mesh.vertices = vertices.ToArray();
 		mesh.triangles = triangles.ToArray();
 		mesh.uv = uvCoordinates.ToArray();
-		mesh.colors32 = colors.ToArray();
+		mesh.colors32 = colors32.ToArray();
 		mesh.RecalculateNormals();
 	}
 }

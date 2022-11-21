@@ -21,6 +21,7 @@ public class OldVoxelMeshFactory
 	private List<Vector3> vertices = new List<Vector3>();
 	private List<int> triangles = new List<int>();
 	private List<Vector2> uvCoordinates = new List<Vector2>();
+	private List<Color32> colors = new List<Color32>();
 
 	// Voxel corner positions
 	public static Vector3[] cornerOffsets = {
@@ -107,23 +108,16 @@ public class OldVoxelMeshFactory
 						// Standard
 						case RenderMethod.Standard:
 							// Add a normal quad cube
-							AddQuadCube(x, y, z, voxel.type, false);
-							break;
-
-						// Standard
-						case RenderMethod.Colored:
-							// Add a normal quad cube
-							AddQuadCube(x, y, z, voxel.type, false);
+							AddQuadCube(x, y, z, voxel, false);
 							break;
 
 						// Transparent
 						case RenderMethod.Transparent:
 							// Add a normal quad cube
-							AddQuadCube(x, y, z, voxel.type, false);
+							AddQuadCube(x, y, z, voxel, false);
 
 							// Add an inverted quad cube
-							bool hasTransparency = voxelsData[(int)voxel.type].renderMethod == RenderMethod.Transparent;
-							if (hasTransparency) AddQuadCube(x, y, z, voxel.type, true);
+							AddQuadCube(x, y, z, voxel, true);
 							break;
 
 						// Decoration
@@ -144,9 +138,6 @@ public class OldVoxelMeshFactory
 	// Add decoration
 	private void AddDecoration(int x, int y, int z, VoxelType voxelType)
 	{
-		// THIS BIT SHOULD MAYBE NOT BE A PART OF VOXEL MESH FACTORY? ALSO THIS IS VERY MESSY CODE
-		Debug.Log("Adding decoration:");
-
 		// Get texture map width
 		int texturesPixelWidth = (int)Mathf.Sqrt(pixels.Length);
 		int textureWidth = texturesPixelWidth / texturesBlockWidth;
@@ -158,20 +149,13 @@ public class OldVoxelMeshFactory
 		VoxelTextureData voxelData = voxelsData[(int)voxelType];
 		int cursorStartX = voxelData.sideTextureCoordinates.x * textureWidth;
 		int cursorStartY = voxelData.sideTextureCoordinates.y * textureWidth;
-		Debug.Log("cursorStartX:" + cursorStartX);
-		Debug.Log("cursorStartY:" + cursorStartY);
 		for (int cursorX = cursorStartX; cursorX < cursorStartX + textureWidth; cursorX++)
 			for (int cursorY = cursorStartY; cursorY < cursorStartY + textureWidth; cursorY++)
 			{
-				Debug.Log("cursorX: " + cursorX);
-				Debug.Log("cursorY: " + cursorY);
 				int pixelIndex = cursorX + cursorY * texturesPixelWidth;
-				Debug.Log("pixelIndex: " + pixelIndex);
-				Color color = pixels[pixelIndex];
+				Color32 color = pixels[pixelIndex];
 				Vector3Int writePosition = new Vector3Int(cursorX - cursorStartX, cursorY - cursorStartY, 8);
-				Debug.Log("writePosition: " + writePosition);
 				if (color.a > 0.5f) decorationVoxelGrid.WriteVoxel(writePosition.x, writePosition.y, writePosition.z, new Voxel(color));
-				Debug.Log("Color: " + color);
 			}
 
 		GameObject decorationGameObject = new GameObject("Decoration");
@@ -185,34 +169,34 @@ public class OldVoxelMeshFactory
 	}
 
 	// Add a quad cube
-	private void AddQuadCube(int x, int y, int z, VoxelType voxelType, bool invertFaces)
+	private void AddQuadCube(int x, int y, int z, Voxel voxel, bool invertFaces)
 	{
 		// Get voxel position TEMPORARY REPLACE VECTOR3INTS
 		Vector3Int voxelPosition = new Vector3Int(x, y, z);
 
 		// Check left
 		if (CanPlaceQuadInDirection(x - 1, y, z))
-			AddQuad(voxelPosition, voxelType, VoxelSide.Left, invertFaces);
+			AddQuad(voxelPosition, voxel, VoxelSide.Left, invertFaces);
 
 		// Check right
 		if (CanPlaceQuadInDirection(x + 1, y, z))
-			AddQuad(voxelPosition, voxelType, VoxelSide.Right, invertFaces);
+			AddQuad(voxelPosition, voxel, VoxelSide.Right, invertFaces);
 
 		// Check up
 		if (CanPlaceQuadInDirection(x, y + 1, z))
-			AddQuad(voxelPosition, voxelType, VoxelSide.Top, invertFaces);
+			AddQuad(voxelPosition, voxel, VoxelSide.Top, invertFaces);
 
 		// Check down
 		if (CanPlaceQuadInDirection(x, y - 1, z))
-			AddQuad(voxelPosition, voxelType, VoxelSide.Bottom, invertFaces);
+			AddQuad(voxelPosition, voxel, VoxelSide.Bottom, invertFaces);
 
 		// Check backwards
 		if (CanPlaceQuadInDirection(x, y, z - 1))
-			AddQuad(voxelPosition, voxelType, VoxelSide.Front, invertFaces);
+			AddQuad(voxelPosition, voxel, VoxelSide.Front, invertFaces);
 
 		// Check forwards
 		if (CanPlaceQuadInDirection(x, y, z + 1))
-			AddQuad(voxelPosition, voxelType, VoxelSide.Back, invertFaces);
+			AddQuad(voxelPosition, voxel, VoxelSide.Back, invertFaces);
 	}
 
 	// Makes several checks to see if it is okay to place a quad
@@ -231,13 +215,13 @@ public class OldVoxelMeshFactory
 	}
 
 	// Add a quad to the triangles and vertices
-	private void AddQuad(Vector3Int position, VoxelType voxelType, VoxelSide side, bool invertFace)
+	private void AddQuad(Vector3Int position, Voxel voxel, VoxelSide side, bool invertFace)
 	{
 		// Set up
 		int vertexStartingIndex = vertices.Count;
 
 		// Get the UV coordinates for each side of the voxel
-		int blockTypeIndex = (int)voxelType;
+		int blockTypeIndex = (int)voxel.type;
 		VoxelTextureData voxelData = voxelsData[blockTypeIndex];
 		Vector2 uvSideCoordinates = (Vector2)voxelData.sideTextureCoordinates / texturesBlockWidth;
 		Vector2 uvTopCoordinates = (Vector2)voxelData.topTextureCoordinates / texturesBlockWidth;
@@ -284,7 +268,12 @@ public class OldVoxelMeshFactory
 		}
 
 		// Add vertices
-		foreach (int corner in faceCorners) vertices.Add(position + cornerOffsets[corner]);
+		foreach (int corner in faceCorners)
+		{
+			vertices.Add(position + cornerOffsets[corner]);
+			if (voxel.type == VoxelType.Blank) Debug.Log(voxel.color);
+			colors.Add(voxel.color);
+		}
 
 		// Check if face is inverted
 		if (!invertFace)
@@ -323,6 +312,7 @@ public class OldVoxelMeshFactory
 		mesh.vertices = vertices.ToArray();
 		mesh.triangles = triangles.ToArray();
 		mesh.uv = uvCoordinates.ToArray();
+		mesh.colors32 = colors.ToArray();
 		mesh.RecalculateNormals();
 	}
 }

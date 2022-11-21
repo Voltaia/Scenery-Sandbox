@@ -6,7 +6,6 @@ public enum RenderMethod
 {
 	None,
 	Standard,
-	Colored,
 	Transparent,
 	Decoration
 }

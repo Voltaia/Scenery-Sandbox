@@ -9,7 +9,7 @@ using UnityEngine;
 // THIS CLASS NEEDS A GOOD, OLD FASHIONED, REFACTOR
 
 // Generates voxel meshes
-public class VoxelMeshFactory
+public class OldVoxelMeshFactory
 {
 	// Class variables
 	private VoxelGrid voxelGrid;
@@ -71,7 +71,7 @@ public class VoxelMeshFactory
 	}
 
 	// Constructor
-	public VoxelMeshFactory(VoxelGrid voxelGrid, int texturesBlockWidth, VoxelTextureData[] voxelsData, Texture2D texture2D)
+	public OldVoxelMeshFactory(VoxelGrid voxelGrid, int texturesBlockWidth, VoxelTextureData[] voxelsData, Texture2D texture2D)
 	{
 		// Fill in variables
 		this.voxelGrid = voxelGrid;

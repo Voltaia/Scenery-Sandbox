@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.07127906, g: 0.25550902, b: 0.4638586, a: 1}
+  m_IndirectSpecularColor: {r: 0.071279, g: 0.25550884, b: 0.46385804, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -421,7 +421,7 @@ MonoBehaviour:
   texturesBlockWidth: 8
   material: {fileID: 2100000, guid: 3fcc66b1714f45b4c9fad7f5cf78e51d, type: 2}
   texture2D: {fileID: 2800000, guid: ce480e7eed99d2d418e3ecedd8522e35, type: 3}
-  voxelsData:
+  voxelTexturesData:
   - {fileID: 11400000, guid: 89d2be66fbb457f44a91a1a107fbea8f, type: 2}
   - {fileID: 11400000, guid: c24bd0df3cc561944a1a0a62b80f83e8, type: 2}
   - {fileID: 11400000, guid: 9134f1d82a171444c9e891ff8494f8a1, type: 2}

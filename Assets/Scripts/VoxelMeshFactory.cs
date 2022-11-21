@@ -14,7 +14,7 @@ public class VoxelMeshFactory
 	// Class variables
 	private VoxelGrid voxelGrid;
 	private int texturesBlockWidth;
-	private VoxelData[] voxelsData;
+	private VoxelTextureData[] voxelsData;
 	private Texture2D texture2D;
 	private Color32[] pixels;
 	private Mesh mesh = new Mesh();
@@ -71,7 +71,7 @@ public class VoxelMeshFactory
 	}
 
 	// Constructor
-	public VoxelMeshFactory(VoxelGrid voxelGrid, int texturesBlockWidth, VoxelData[] voxelsData, Texture2D texture2D)
+	public VoxelMeshFactory(VoxelGrid voxelGrid, int texturesBlockWidth, VoxelTextureData[] voxelsData, Texture2D texture2D)
 	{
 		// Fill in variables
 		this.voxelGrid = voxelGrid;
@@ -99,7 +99,7 @@ public class VoxelMeshFactory
 				{
 					// Get the voxel
 					VoxelType voxelType = voxelGrid.ReadVoxel(x, y, z);
-					VoxelData voxelData = voxelsData[(int)voxelType];
+					VoxelTextureData voxelData = voxelsData[(int)voxelType];
 
 					// Render methods
 					switch (voxelData.renderMethod)
@@ -149,7 +149,7 @@ public class VoxelMeshFactory
 		VoxelGrid decorationVoxelGrid = new VoxelGrid(textureWidth, textureWidth, textureWidth);
 
 		// Get texture position
-		VoxelData voxelData = voxelsData[(int)voxelType];
+		VoxelTextureData voxelData = voxelsData[(int)voxelType];
 		int cursorStartX = voxelData.sideTextureCoordinates.x * textureWidth;
 		int cursorStartY = voxelData.sideTextureCoordinates.y * textureWidth;
 		Debug.Log("cursorStartX:" + cursorStartX);
@@ -172,7 +172,7 @@ public class VoxelMeshFactory
 		VoxelRenderer voxelRenderer = decorationGameObject.AddComponent<VoxelRenderer>();
 		voxelRenderer.texturesBlockWidth = texturesBlockWidth;
 		voxelRenderer.texture2D = texture2D;
-		voxelRenderer.voxelsData = voxelsData;
+		voxelRenderer.voxelTexturesData = voxelsData;
 		voxelRenderer.voxelGrid = decorationVoxelGrid;
 		voxelRenderer.transform.position = new Vector3(x, y, z);
 		voxelRenderer.Refresh();
@@ -218,7 +218,7 @@ public class VoxelMeshFactory
 
 		// Make checks for open air
 		VoxelType adjacentVoxelType = voxelGrid.ReadVoxel(adjacentX, adjacentY, adjacentZ);
-		VoxelData adjacentVoxelData = voxelsData[(int)adjacentVoxelType];
+		VoxelTextureData adjacentVoxelData = voxelsData[(int)adjacentVoxelType];
 		bool openAir = adjacentVoxelData.renderMethod == RenderMethod.None;
 		bool adjacentVoxelTransparency = adjacentVoxelData.renderMethod == RenderMethod.Transparent;
 		return openAir || adjacentVoxelTransparency;
@@ -232,7 +232,7 @@ public class VoxelMeshFactory
 
 		// Get the UV coordinates for each side of the voxel
 		int blockTypeIndex = (int)voxelType;
-		VoxelData voxelData = voxelsData[blockTypeIndex];
+		VoxelTextureData voxelData = voxelsData[blockTypeIndex];
 		Vector2 uvSideCoordinates = (Vector2)voxelData.sideTextureCoordinates / texturesBlockWidth;
 		Vector2 uvTopCoordinates = (Vector2)voxelData.topTextureCoordinates / texturesBlockWidth;
 		Vector2 uvBottomCoordinates = (Vector2)voxelData.bottomTextureCoordinates / texturesBlockWidth;

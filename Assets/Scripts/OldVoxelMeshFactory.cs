@@ -174,14 +174,24 @@ public class OldVoxelMeshFactory
 		//combineInstances[0].transform = Matrix4x4.Translate(new Vector3(x, y, z));
 		//mesh.CombineMeshes(combineInstances, true, true, true);
 
+		// NOTE: For every 4 vertices there are six triangle points
+
 		List<Vector3> decorationVertices = new List<Vector3>();
 		decorationVertices.AddRange(decorationMesh.vertices);
 		for (int vertexIndex = 0; vertexIndex < decorationVertices.Count; vertexIndex++)
-		{
 			decorationVertices[vertexIndex] += new Vector3(x, y, z);
-		}
+
+		List<int> decorationTriangles = new List<int>();
+		decorationTriangles.AddRange(decorationMesh.triangles);
+		int existingTriangles = triangles.Count - 3;
+		for (int triangleIndex = 0; triangleIndex < decorationTriangles.Count; triangleIndex++)
+			decorationTriangles[triangleIndex] += existingTriangles;
+		
 		vertices.AddRange(decorationVertices);
-		triangles.AddRange(decorationMesh.triangles);
+		Debug.Log(decorationMesh.triangles[decorationMesh.triangles.Length - 1]);
+		triangles.AddRange(decorationTriangles);
+		Debug.Log(triangles.Count);
+		Debug.Log(triangles[triangles.Count - 1]);
 		uv.AddRange(decorationMesh.uv);
 		colors32.AddRange(decorationMesh.colors32);
 	}

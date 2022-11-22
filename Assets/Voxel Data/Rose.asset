@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   topTextureCoordinates: {x: 0, y: 0}
   sideTextureCoordinates: {x: 3, y: 1}
-  bottomTextureCoordinates: {x: 3, y: 1}
+  bottomTextureCoordinates: {x: 0, y: 0}
   renderMethod: 3

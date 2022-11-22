@@ -20,7 +20,7 @@ public class OldVoxelMeshFactory
 	private Mesh mesh = new Mesh();
 	private List<Vector3> vertices = new List<Vector3>();
 	private List<int> triangles = new List<int>();
-	private List<Vector2> uvCoordinates = new List<Vector2>();
+	private List<Vector2> uv = new List<Vector2>();
 	private List<Color32> colors32 = new List<Color32>();
 
 	// Voxel corner positions
@@ -91,7 +91,7 @@ public class OldVoxelMeshFactory
 		// Empty some variables
 		vertices.Clear();
 		triangles.Clear();
-		uvCoordinates.Clear();
+		uv.Clear();
 
 		// Loop through all dimensions
 		for (int x = 0; x < voxelGrid.width; x++)
@@ -168,7 +168,8 @@ public class OldVoxelMeshFactory
 		//voxelRenderer.Refresh();
 
 		//CombineInstance[] combineInstances = new CombineInstance[1];
-		Mesh decorationMesh = new OldVoxelMeshFactory(decorationVoxelGrid, texturesBlockWidth, voxelTexturesData, texture2D).GenerateMesh();
+		OldVoxelMeshFactory voxelMeshFactory = new OldVoxelMeshFactory(decorationVoxelGrid, texturesBlockWidth, voxelTexturesData, texture2D);
+		Mesh decorationMesh = voxelMeshFactory.GenerateMesh();
 		//combineInstances[0].mesh = decorationMesh;
 		//combineInstances[0].transform = Matrix4x4.Translate(new Vector3(x, y, z));
 		//mesh.CombineMeshes(combineInstances, true, true, true);
@@ -177,13 +178,11 @@ public class OldVoxelMeshFactory
 		decorationVertices.AddRange(decorationMesh.vertices);
 		for (int vertexIndex = 0; vertexIndex < decorationVertices.Count; vertexIndex++)
 		{
-			Debug.Log("1: " + decorationVertices[vertexIndex]);
 			decorationVertices[vertexIndex] += new Vector3(x, y, z);
-			Debug.Log("2: " + decorationVertices[vertexIndex]);
 		}
 		vertices.AddRange(decorationVertices);
 		triangles.AddRange(decorationMesh.triangles);
-		uvCoordinates.AddRange(decorationMesh.uv);
+		uv.AddRange(decorationMesh.uv);
 		colors32.AddRange(decorationMesh.colors32);
 	}
 
@@ -315,7 +314,7 @@ public class OldVoxelMeshFactory
 
 		// Add UV coordinates
 		float textureUnit = 1.0f / texturesBlockWidth;
-		uvCoordinates.AddRange(new Vector2[]{
+		uv.AddRange(new Vector2[]{
 			uvStartCoordinates,
 			uvStartCoordinates + new Vector2(0.0f, textureUnit),
 			uvStartCoordinates + new Vector2(textureUnit, 0.0f),
@@ -329,7 +328,7 @@ public class OldVoxelMeshFactory
 		mesh.Clear();
 		mesh.vertices = vertices.ToArray();
 		mesh.triangles = triangles.ToArray();
-		mesh.uv = uvCoordinates.ToArray();
+		mesh.uv = uv.ToArray();
 		mesh.colors32 = colors32.ToArray();
 		mesh.RecalculateNormals();
 	}

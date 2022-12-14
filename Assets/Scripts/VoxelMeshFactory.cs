@@ -158,34 +158,29 @@ public class VoxelMeshFactory
 				if (color.a > 0.5f) decorationVoxelGrid.WriteVoxel(writePosition.x, writePosition.y, writePosition.z, new Voxel(color));
 			}
 
-		//GameObject decorationGameObject = new GameObject("Decoration");
-		//VoxelRenderer voxelRenderer = decorationGameObject.AddComponent<VoxelRenderer>();
-		//voxelRenderer.texturesBlockWidth = texturesBlockWidth;
-		//voxelRenderer.texture2D = texture2D;
-		//voxelRenderer.voxelTexturesData = voxelTexturesData;
-		//voxelRenderer.voxelGrid = decorationVoxelGrid;
-		//voxelRenderer.transform.position = new Vector3(x, y, z);
-		//voxelRenderer.Refresh();
-
-		//CombineInstance[] combineInstances = new CombineInstance[1];
+		// Generate the mesh
 		VoxelMeshFactory voxelMeshFactory = new VoxelMeshFactory(decorationVoxelGrid, texturesBlockWidth, voxelTexturesData, texture2D);
 		Mesh decorationMesh = voxelMeshFactory.GenerateMesh();
-		//combineInstances[0].mesh = decorationMesh;
-		//combineInstances[0].transform = Matrix4x4.Translate(new Vector3(x, y, z));
-		//mesh.CombineMeshes(combineInstances, true, true, true);
 
-		// NOTE: For every 4 vertices there are six triangle points
-
+		// Grab, scale and transform the vertices
 		List<Vector3> decorationVertices = new List<Vector3>();
 		decorationVertices.AddRange(decorationMesh.vertices);
 		for (int vertexIndex = 0; vertexIndex < decorationVertices.Count; vertexIndex++)
-			decorationVertices[vertexIndex] += new Vector3(x, y, z);
+		{
+			// Scale
+			decorationVertices[vertexIndex] *= 0.0625f;
 
+			// Offset accordingly
+			decorationVertices[vertexIndex] += new Vector3(x, y, z);
+		}
+		
+		// Grab and offset the triangles
 		List<int> decorationTriangles = new List<int>();
 		decorationTriangles.AddRange(decorationMesh.triangles);
 		for (int triangleIndex = 0; triangleIndex < decorationTriangles.Count; triangleIndex++)
 			decorationTriangles[triangleIndex] += vertices.Count;
 		
+		// Apply the decoration to the mesh
 		vertices.AddRange(decorationVertices);
 		triangles.AddRange(decorationTriangles);
 		uv.AddRange(decorationMesh.uv);
@@ -234,7 +229,9 @@ public class VoxelMeshFactory
 		Voxel adjacentVoxel = voxelGrid.ReadVoxel(adjacentX, adjacentY, adjacentZ);
 		VoxelTextureData adjacentVoxelData = voxelTexturesData[(int)adjacentVoxel.type];
 		bool openAir = adjacentVoxelData.renderMethod == RenderMethod.None;
-		bool adjacentVoxelTransparency = adjacentVoxelData.renderMethod == RenderMethod.Transparent;
+		bool adjacentVoxelTransparency =
+			adjacentVoxelData.renderMethod == RenderMethod.Transparent
+			|| adjacentVoxelData.renderMethod == RenderMethod.Decoration;
 		return openAir || adjacentVoxelTransparency;
 	}
 

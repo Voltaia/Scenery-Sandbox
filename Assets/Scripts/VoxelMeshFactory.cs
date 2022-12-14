@@ -155,7 +155,11 @@ public class VoxelMeshFactory
 				int pixelIndex = cursorX + cursorY * texturesPixelWidth;
 				Color32 color = pixels[pixelIndex];
 				Vector3Int writePosition = new Vector3Int(cursorX - cursorStartX, cursorY - cursorStartY, 8);
-				if (color.a > 0.5f) decorationVoxelGrid.WriteVoxel(writePosition.x, writePosition.y, writePosition.z, new Voxel(color));
+				if (color.a > 0.5f)
+				{
+					decorationVoxelGrid.WriteVoxel(writePosition.x, writePosition.y, writePosition.z, new Voxel(color));
+					decorationVoxelGrid.WriteVoxel(writePosition.x, writePosition.y, writePosition.z - 1, new Voxel(color));
+				}
 			}
 
 		// Generate the mesh

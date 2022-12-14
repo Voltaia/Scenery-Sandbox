@@ -32,11 +32,7 @@ public class VoxelRenderer : MonoBehaviour
 	// Refresh the mesh
 	public void Refresh()
 	{
-		VoxelMeshFactory voxelMeshFactory = new VoxelMeshFactory(voxelGrid, texturesBlockWidth, voxelTexturesData, texture2D);
-		meshFilter.mesh = voxelMeshFactory.GenerateMesh();
-
-		// What this should look like
-		//meshFilter.mesh = VoxelMeshFactory.GenerateMesh(voxelGrid, texturesBlockWidth, voxelTexturesData);
-		//Mesh decoration = VoxelMeshFactory.GenerateMesh(voxelGrid, texture2D);
+		VoxelMeshFactory.SetTextureData(voxelTexturesData, texturesBlockWidth, texture2D);
+		meshFilter.mesh = VoxelMeshFactory.GenerateMesh(voxelGrid);
 	}
 }

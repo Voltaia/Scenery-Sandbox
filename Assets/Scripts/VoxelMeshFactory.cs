@@ -4,24 +4,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-// HEY
-// LISTEN
-// THIS CLASS NEEDS A GOOD, OLD FASHIONED, REFACTOR
-
 // Generates voxel meshes
-public class VoxelMeshFactory
+public static class VoxelMeshFactory
 {
 	// Class variables
-	private VoxelGrid voxelGrid;
-	private int texturesBlockWidth;
-	private VoxelTextureData[] voxelTexturesData;
-	private Texture2D texture2D;
-	private Color32[] pixels;
-	private Mesh mesh = new Mesh();
-	private List<Vector3> vertices = new List<Vector3>();
-	private List<int> triangles = new List<int>();
-	private List<Vector2> uv = new List<Vector2>();
-	private List<Color32> colors32 = new List<Color32>();
+	private static VoxelGrid currentVoxelGrid;
+	private static MeshData currentMeshData;
+
+	// Static variables
+	private static VoxelTextureData[] s_voxelTexturesData;
+	private static int s_texturesBlockWidth;
+	private static Texture2D s_texture2D;
+	private static Color32[] s_pixels;
 
 	// Voxel corner positions
 	public static Vector3[] cornerOffsets = {
@@ -71,27 +65,21 @@ public class VoxelMeshFactory
 		Back
 	}
 
-	// Constructor
-	public VoxelMeshFactory(VoxelGrid voxelGrid, int texturesBlockWidth, VoxelTextureData[] voxelsData, Texture2D texture2D)
+	// Set up
+	public static void SetTextureData(VoxelTextureData[] voxelTexturesData, int texturesBlockWidth, Texture2D texture2D)
 	{
-		// Fill in variables
-		this.voxelGrid = voxelGrid;
-		this.texturesBlockWidth = texturesBlockWidth;
-		this.voxelTexturesData = voxelsData;
-		this.texture2D = texture2D;
-		pixels = texture2D.GetPixels32();
-
-		// Increase max vertex count
-		mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+		s_voxelTexturesData = voxelTexturesData;
+		s_texturesBlockWidth = texturesBlockWidth;
+		s_texture2D = texture2D;
+		s_pixels = texture2D.GetPixels32();
 	}
 
 	// Generate the mesh
-	public Mesh GenerateMesh()
+	public static Mesh GenerateMesh(VoxelGrid voxelGrid)
 	{
-		// Empty some variables
-		vertices.Clear();
-		triangles.Clear();
-		uv.Clear();
+		// Create the mesh data
+		currentVoxelGrid = voxelGrid;
+		currentMeshData = new MeshData();
 
 		// Loop through all dimensions
 		for (int x = 0; x < voxelGrid.width; x++)
@@ -100,7 +88,7 @@ public class VoxelMeshFactory
 				{
 					// Get the voxel
 					Voxel voxel = voxelGrid.ReadVoxel(x, y, z);
-					VoxelTextureData voxelData = voxelTexturesData[(int)voxel.type];
+					VoxelTextureData voxelData = s_voxelTexturesData[(int)voxel.type];
 
 					// Render methods
 					switch (voxelData.renderMethod)
@@ -128,19 +116,16 @@ public class VoxelMeshFactory
 					}
 				}
 
-		// Apply changes
-		RefreshMesh();
-
 		// Return mesh
-		return mesh;
+		return currentMeshData.Mesh;
 	}
 
 	// Add decoration
-	private void AddDecoration(int x, int y, int z, Voxel voxel)
+	private static void AddDecoration(int x, int y, int z, Voxel voxel)
 	{
 		// Get texture map width
-		int texturesPixelWidth = (int)Mathf.Sqrt(pixels.Length);
-		int textureWidth = texturesPixelWidth / texturesBlockWidth;
+		int texturesPixelWidth = (int)Mathf.Sqrt(s_pixels.Length);
+		int textureWidth = texturesPixelWidth / s_texturesBlockWidth;
 
 		// Randomize rotation
 		Random.InitState(x + y + z);
@@ -150,14 +135,14 @@ public class VoxelMeshFactory
 		VoxelGrid decorationVoxelGrid = new VoxelGrid(textureWidth, textureWidth, textureWidth);
 
 		// Get texture position
-		VoxelTextureData voxelData = voxelTexturesData[(int)voxel.type];
+		VoxelTextureData voxelData = s_voxelTexturesData[(int)voxel.type];
 		int cursorStartX = voxelData.sideTextureCoordinates.x * textureWidth;
 		int cursorStartY = voxelData.sideTextureCoordinates.y * textureWidth;
 		for (int cursorX = cursorStartX; cursorX < cursorStartX + textureWidth; cursorX++)
 			for (int cursorY = cursorStartY; cursorY < cursorStartY + textureWidth; cursorY++)
 			{
 				int pixelIndex = cursorX + cursorY * texturesPixelWidth;
-				Color32 color = pixels[pixelIndex];
+				Color32 color = s_pixels[pixelIndex];
 				if (color.a > 0.5f)
 				{
 					Vector3Int writePosition = flipXAndY ?
@@ -169,8 +154,7 @@ public class VoxelMeshFactory
 			}
 
 		// Generate the mesh
-		VoxelMeshFactory voxelMeshFactory = new VoxelMeshFactory(decorationVoxelGrid, texturesBlockWidth, voxelTexturesData, texture2D);
-		Mesh decorationMesh = voxelMeshFactory.GenerateMesh();
+		Mesh decorationMesh = VoxelMeshFactory.GenerateMesh(decorationVoxelGrid);
 
 		// Grab, scale and transform the vertices
 		List<Vector3> decorationVertices = new List<Vector3>();
@@ -188,17 +172,17 @@ public class VoxelMeshFactory
 		List<int> decorationTriangles = new List<int>();
 		decorationTriangles.AddRange(decorationMesh.triangles);
 		for (int triangleIndex = 0; triangleIndex < decorationTriangles.Count; triangleIndex++)
-			decorationTriangles[triangleIndex] += vertices.Count;
+			decorationTriangles[triangleIndex] += currentMeshData.vertices.Count;
 		
 		// Apply the decoration to the mesh
-		vertices.AddRange(decorationVertices);
-		triangles.AddRange(decorationTriangles);
-		uv.AddRange(decorationMesh.uv);
-		colors32.AddRange(decorationMesh.colors32);
+		currentMeshData.vertices.AddRange(decorationVertices);
+		currentMeshData.triangles.AddRange(decorationTriangles);
+		currentMeshData.uv.AddRange(decorationMesh.uv);
+		currentMeshData.colors32.AddRange(decorationMesh.colors32);
 	}
 
 	// Add a quad cube
-	private void AddQuadCube(int x, int y, int z, Voxel voxel, bool invertFaces)
+	private static void AddQuadCube(int x, int y, int z, Voxel voxel, bool invertFaces)
 	{
 		// Get voxel position TEMPORARY REPLACE VECTOR3INTS
 		Vector3Int voxelPosition = new Vector3Int(x, y, z);
@@ -229,15 +213,15 @@ public class VoxelMeshFactory
 	}
 
 	// Makes several checks to see if it is okay to place a quad
-	private bool CanPlaceQuadInDirection(int adjacentX, int adjacentY, int adjacentZ)
+	private static bool CanPlaceQuadInDirection(int adjacentX, int adjacentY, int adjacentZ)
 	{
 		// Check if edge of grid
-		bool edgeOfGrid = voxelGrid.IsOutOfBounds(adjacentX, adjacentY, adjacentZ);
+		bool edgeOfGrid = currentVoxelGrid.IsOutOfBounds(adjacentX, adjacentY, adjacentZ);
 		if (edgeOfGrid) return true;
 
 		// Make checks for open air
-		Voxel adjacentVoxel = voxelGrid.ReadVoxel(adjacentX, adjacentY, adjacentZ);
-		VoxelTextureData adjacentVoxelData = voxelTexturesData[(int)adjacentVoxel.type];
+		Voxel adjacentVoxel = currentVoxelGrid.ReadVoxel(adjacentX, adjacentY, adjacentZ);
+		VoxelTextureData adjacentVoxelData = s_voxelTexturesData[(int)adjacentVoxel.type];
 		bool openAir = adjacentVoxelData.renderMethod == RenderMethod.None;
 		bool adjacentVoxelTransparency =
 			adjacentVoxelData.renderMethod == RenderMethod.Transparent
@@ -246,17 +230,17 @@ public class VoxelMeshFactory
 	}
 
 	// Add a quad to the triangles and vertices
-	private void AddQuad(Vector3Int position, Voxel voxel, VoxelSide side, bool invertFace)
+	private static void AddQuad(Vector3Int position, Voxel voxel, VoxelSide side, bool invertFace)
 	{
 		// Set up
-		int vertexStartingIndex = vertices.Count;
+		int vertexStartingIndex = currentMeshData.vertices.Count;
 
 		// Get the UV coordinates for each side of the voxel
 		int blockTypeIndex = (int)voxel.type;
-		VoxelTextureData voxelData = voxelTexturesData[blockTypeIndex];
-		Vector2 uvSideCoordinates = (Vector2)voxelData.sideTextureCoordinates / texturesBlockWidth;
-		Vector2 uvTopCoordinates = (Vector2)voxelData.topTextureCoordinates / texturesBlockWidth;
-		Vector2 uvBottomCoordinates = (Vector2)voxelData.bottomTextureCoordinates / texturesBlockWidth;
+		VoxelTextureData voxelData = s_voxelTexturesData[blockTypeIndex];
+		Vector2 uvSideCoordinates = (Vector2)voxelData.sideTextureCoordinates / s_texturesBlockWidth;
+		Vector2 uvTopCoordinates = (Vector2)voxelData.topTextureCoordinates / s_texturesBlockWidth;
+		Vector2 uvBottomCoordinates = (Vector2)voxelData.bottomTextureCoordinates / s_texturesBlockWidth;
 
 		// Placeholder variables
 		int[] faceCorners;
@@ -301,15 +285,15 @@ public class VoxelMeshFactory
 		// Add vertices
 		foreach (int corner in faceCorners)
 		{
-			vertices.Add(position + cornerOffsets[corner]);
-			colors32.Add(voxel.color);
+			currentMeshData.vertices.Add(position + cornerOffsets[corner]);
+			currentMeshData.colors32.Add(voxel.color);
 		}
 
 		// Check if face is inverted
 		if (!invertFace)
 		{
 			// Add triangles on the outside
-			triangles.AddRange(new int[]
+			currentMeshData.triangles.AddRange(new int[]
 			{
 				vertexStartingIndex + 0, vertexStartingIndex + 1, vertexStartingIndex + 2, // First triangle
 				vertexStartingIndex + 3, vertexStartingIndex + 2, vertexStartingIndex + 1 // Second triangle
@@ -318,7 +302,7 @@ public class VoxelMeshFactory
 		else
 		{
 			// Add triangles on the inside
-			triangles.AddRange(new int[]
+			currentMeshData.triangles.AddRange(new int[]
 			{
 				vertexStartingIndex + 2, vertexStartingIndex + 1, vertexStartingIndex + 0, // First triangle
 				vertexStartingIndex + 1, vertexStartingIndex + 2, vertexStartingIndex + 3 // Second triangle
@@ -326,8 +310,8 @@ public class VoxelMeshFactory
 		}
 
 		// Add UV coordinates
-		float textureUnit = 1.0f / texturesBlockWidth;
-		uv.AddRange(new Vector2[]{
+		float textureUnit = 1.0f / s_texturesBlockWidth;
+		currentMeshData.uv.AddRange(new Vector2[]{
 			uvStartCoordinates,
 			uvStartCoordinates + new Vector2(0.0f, textureUnit),
 			uvStartCoordinates + new Vector2(textureUnit, 0.0f),
@@ -335,14 +319,33 @@ public class VoxelMeshFactory
 		});
 	}
 
-	// Refresh the mesh
-	private void RefreshMesh()
+	// Mesh data
+	private class MeshData
 	{
-		mesh.Clear();
-		mesh.vertices = vertices.ToArray();
-		mesh.triangles = triangles.ToArray();
-		mesh.uv = uv.ToArray();
-		mesh.colors32 = colors32.ToArray();
-		mesh.RecalculateNormals();
+		// Variables
+		private Mesh mesh = new Mesh();
+		public List<Vector3> vertices = new List<Vector3>();
+		public List<int> triangles = new List<int>();
+		public List<Vector2> uv = new List<Vector2>();
+		public List<Color32> colors32 = new List<Color32>();
+
+		// Properties
+		public Mesh Mesh {
+			get {
+				// Apply changes to mesh
+				mesh.vertices = vertices.ToArray();
+				mesh.triangles = triangles.ToArray();
+				mesh.uv = uv.ToArray();
+				mesh.colors32 = colors32.ToArray();
+				mesh.RecalculateNormals();
+				return mesh;
+			}
+		}
+
+		// Constructor
+		public MeshData()
+		{
+			mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+		}
 	}
 }

@@ -183,15 +183,11 @@ public class VoxelMeshFactory
 
 		List<int> decorationTriangles = new List<int>();
 		decorationTriangles.AddRange(decorationMesh.triangles);
-		int existingTriangles = triangles.Count - 3;
 		for (int triangleIndex = 0; triangleIndex < decorationTriangles.Count; triangleIndex++)
-			decorationTriangles[triangleIndex] += existingTriangles;
+			decorationTriangles[triangleIndex] += vertices.Count;
 		
 		vertices.AddRange(decorationVertices);
-		Debug.Log(decorationMesh.triangles[decorationMesh.triangles.Length - 1]);
 		triangles.AddRange(decorationTriangles);
-		Debug.Log(triangles.Count);
-		Debug.Log(triangles[triangles.Count - 1]);
 		uv.AddRange(decorationMesh.uv);
 		colors32.AddRange(decorationMesh.colors32);
 	}

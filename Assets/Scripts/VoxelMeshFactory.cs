@@ -142,6 +142,10 @@ public class VoxelMeshFactory
 		int texturesPixelWidth = (int)Mathf.Sqrt(pixels.Length);
 		int textureWidth = texturesPixelWidth / texturesBlockWidth;
 
+		// Randomize rotation
+		Random.InitState(x + y + z);
+		bool flipXAndY = Random.value > 0.5f;
+
 		// Create voxel grid
 		VoxelGrid decorationVoxelGrid = new VoxelGrid(textureWidth, textureWidth, textureWidth);
 
@@ -154,9 +158,11 @@ public class VoxelMeshFactory
 			{
 				int pixelIndex = cursorX + cursorY * texturesPixelWidth;
 				Color32 color = pixels[pixelIndex];
-				Vector3Int writePosition = new Vector3Int(cursorX - cursorStartX, cursorY - cursorStartY, 8);
 				if (color.a > 0.5f)
 				{
+					Vector3Int writePosition = flipXAndY ?
+						new Vector3Int(cursorX - cursorStartX, cursorY - cursorStartY, 8)
+						: new Vector3Int(8, cursorY - cursorStartY, cursorX - cursorStartX);
 					decorationVoxelGrid.WriteVoxel(writePosition.x, writePosition.y, writePosition.z, new Voxel(color));
 					decorationVoxelGrid.WriteVoxel(writePosition.x, writePosition.y, writePosition.z - 1, new Voxel(color));
 				}

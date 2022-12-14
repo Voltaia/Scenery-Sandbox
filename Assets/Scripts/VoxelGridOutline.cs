@@ -60,11 +60,11 @@ public class VoxelGridOutline : MonoBehaviour
 		}
 
 		// Set corners
-		Vector3[] corners = new Vector3[OldVoxelMeshFactory.cornerOffsets.Length];
+		Vector3[] corners = new Vector3[VoxelMeshFactory.cornerOffsets.Length];
 		for (int index = 0; index < corners.Length; index++) corners[index] = new Vector3(
-			OldVoxelMeshFactory.cornerOffsets[index].x * voxelRenderer.voxelGrid.width,
-			OldVoxelMeshFactory.cornerOffsets[index].y * voxelRenderer.voxelGrid.height,
-			OldVoxelMeshFactory.cornerOffsets[index].z * voxelRenderer.voxelGrid.length
+			VoxelMeshFactory.cornerOffsets[index].x * voxelRenderer.voxelGrid.width,
+			VoxelMeshFactory.cornerOffsets[index].y * voxelRenderer.voxelGrid.height,
+			VoxelMeshFactory.cornerOffsets[index].z * voxelRenderer.voxelGrid.length
 		);
 
 		// Bottom lines

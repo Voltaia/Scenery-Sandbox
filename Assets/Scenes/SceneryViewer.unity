@@ -254,7 +254,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83943238cfd311445b30955d2df8a17d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  height: 85
+  height: 65
   radius: 45
   orbitAmount: 0.5
 --- !u!1 &410087039

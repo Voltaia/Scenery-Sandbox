@@ -35,7 +35,7 @@ public class VoxelRendererOrbit : MonoBehaviour
 		// Set position
 		transform.position = new Vector3(
 			subjectPosition.x + Mathf.Cos(orbitAmount) * radius,
-			height,
+			subjectPosition.y + height,
 			subjectPosition.z + Mathf.Sin(orbitAmount) * radius
 		);
 

@@ -124,7 +124,7 @@ public static class VoxelMeshFactory
 
 		// Randomize rotation
 		Random.InitState(x + y + z);
-		bool flipXAndY = Random.value > 0.5f;
+		bool flipXAndZ = Random.value > 0.5f;
 
 		// Create voxel grid
 		VoxelGrid decorationVoxelGrid = new VoxelGrid(textureWidth, textureWidth, textureWidth);
@@ -140,11 +140,18 @@ public static class VoxelMeshFactory
 				Color32 color = s_pixels[pixelIndex];
 				if (color.a > 0.5f)
 				{
-					Vector3Int writePosition = flipXAndY ?
-						new Vector3Int(cursorX - cursorStartX, cursorY - cursorStartY, 8)
-						: new Vector3Int(8, cursorY - cursorStartY, cursorX - cursorStartX);
-					decorationVoxelGrid.WriteVoxel(writePosition.x, writePosition.y, writePosition.z, new Voxel(color));
-					decorationVoxelGrid.WriteVoxel(writePosition.x, writePosition.y, writePosition.z - 1, new Voxel(color));
+					if (!flipXAndZ)
+					{
+						Vector3Int writePosition = new Vector3Int(cursorX - cursorStartX, cursorY - cursorStartY, 8);
+						decorationVoxelGrid.WriteVoxel(writePosition.x, writePosition.y, writePosition.z, new Voxel(color));
+						decorationVoxelGrid.WriteVoxel(writePosition.x, writePosition.y, writePosition.z - 1, new Voxel(color));
+					}
+					else
+					{
+						Vector3Int writePosition = new Vector3Int(8, cursorY - cursorStartY, cursorX - cursorStartX);
+						decorationVoxelGrid.WriteVoxel(writePosition.x, writePosition.y, writePosition.z, new Voxel(color));
+						decorationVoxelGrid.WriteVoxel(writePosition.x - 1, writePosition.y, writePosition.z, new Voxel(color));
+					}
 				}
 			}
 

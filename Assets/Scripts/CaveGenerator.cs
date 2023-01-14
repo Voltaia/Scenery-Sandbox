@@ -15,6 +15,7 @@ public class CaveGenerator
 	private const int Radius = 3;
 	private const int MinimumCaves = 2;
 	private const int MaximumCaves = 3;
+	private const int SurfaceCaveStartDepth = 1;
 
 	// Constructor
 	public CaveGenerator(VoxelGrid voxelGrid)
@@ -39,7 +40,7 @@ public class CaveGenerator
 			float startZ = Random.Range(offsetFromSide, voxelGrid.length - offsetFromSide);
 
 			// Get start height
-			float startY = (float)voxelGrid.GetSurfaceY((int)startX, (int)startZ);
+			float startY = voxelGrid.GetSurfaceY((int)startX, (int)startZ) - SurfaceCaveStartDepth;
 
 			// Initialize as vector
 			Vector3 startPosition = new Vector3(startX, startY, startZ);

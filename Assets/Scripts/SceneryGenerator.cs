@@ -8,16 +8,20 @@ using UnityEngine;
 public class SceneryGenerator : MonoBehaviour
 {
 	// Inspector variables
-	[Header("Generation")]
+	[Header("Creation")]
 	public bool generateNew = true;
-	public bool randomizeSeed = true;
-	[Range(0, 1000)]
+	public bool randomizeProperties = true;
+	[Range(0, 999)]
 	public int seed;
 
-	[Header("Options")]
+	[Header("Generation")]
 	public bool generateTerrain = true;
 	public bool generateCaves = true;
 	public bool generateFlora = true;
+
+	[Header("Texturing")]
+	public int texturePackID = 0;
+	public Texture2D[] texturePacks;
 
 	// Class variables
 	private VoxelGrid voxelGrid;
@@ -46,8 +50,18 @@ public class SceneryGenerator : MonoBehaviour
 		// Check if we're meant to generate a new scenery this frame
 		if (generateNew)
 		{
-			// Generate a new scenery
-			if (randomizeSeed) RandomizeSeed();
+			// Randomize some stuff
+			if (randomizeProperties)
+			{
+				// Randomize seed
+				RandomizeSeed();
+
+				// Get random texture pack
+				Random.InitState(seed);
+				texturePackID = Random.Range(0, texturePacks.Length);
+			}
+
+			// Generate scenery
 			Generate();
 
 			// Disable for next frame
@@ -67,7 +81,7 @@ public class SceneryGenerator : MonoBehaviour
 		if (generateFlora) floraGenerator.WriteFlora(seed);
 
 		// Apply changes
-		voxelRenderer.Refresh();
+		voxelRenderer.Refresh(texturePacks[texturePackID]);
 	}
 
 	// Randomize seed

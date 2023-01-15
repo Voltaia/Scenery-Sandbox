@@ -10,7 +10,6 @@ public class VoxelRenderer : MonoBehaviour
 	public VoxelGrid voxelGrid;
 	public int texturesBlockWidth;
 	public Material material;
-	public Texture2D texture2D;
 	public VoxelTextureData[] voxelTexturesData;
 
 	// Class variables
@@ -24,14 +23,12 @@ public class VoxelRenderer : MonoBehaviour
 		meshRenderer = gameObject.AddComponent<MeshRenderer>();
 		meshRenderer.material = material;
 		meshFilter = gameObject.AddComponent<MeshFilter>();
-
-		// If voxel grid is filled, generate a mesh for it
-		if (voxelGrid != null) Refresh();
 	}
 
 	// Refresh the mesh
-	public void Refresh()
+	public void Refresh(Texture2D texture2D)
 	{
+		material.SetTexture("_Texture2D", texture2D);
 		VoxelMeshFactory.SetTextureData(voxelTexturesData, texturesBlockWidth, texture2D);
 		meshFilter.mesh = VoxelMeshFactory.GenerateMesh(voxelGrid);
 	}

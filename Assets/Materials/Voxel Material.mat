@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Textures
+  m_Name: Voxel Material
   m_Shader: {fileID: -6465566751694194690, guid: 3d537a2947d4b4c4c8f96d6910c85d20,
     type: 3}
   m_ValidKeywords: []

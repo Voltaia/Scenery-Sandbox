@@ -420,7 +420,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   texturesBlockWidth: 8
   material: {fileID: 2100000, guid: 3fcc66b1714f45b4c9fad7f5cf78e51d, type: 2}
-  texture2D: {fileID: 2800000, guid: ce480e7eed99d2d418e3ecedd8522e35, type: 3}
   voxelTexturesData:
   - {fileID: 11400000, guid: 89d2be66fbb457f44a91a1a107fbea8f, type: 2}
   - {fileID: 11400000, guid: 58001afc3c87422488d7f2a00ff9e949, type: 2}
@@ -458,8 +457,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generateNew: 1
-  randomizeSeed: 1
+  randomizeProperties: 1
   seed: 0
   generateTerrain: 1
   generateCaves: 1
   generateFlora: 1
+  texturePackID: 0
+  texturePacks:
+  - {fileID: 2800000, guid: ce480e7eed99d2d418e3ecedd8522e35, type: 3}
+  - {fileID: 2800000, guid: a5f2b417c14936d44af85e346aa6f301, type: 3}
+  - {fileID: 2800000, guid: 636accefead12b4469a7fa0d29894f05, type: 3}
+  - {fileID: 2800000, guid: e864c37024a500f4fb2f5c0d46d0678c, type: 3}

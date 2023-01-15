@@ -10,7 +10,7 @@ public class SceneryGenerator : MonoBehaviour
 	// Inspector variables
 	[Header("Creation")]
 	public bool generateNew = true;
-	public bool randomizeProperties = true;
+	public bool randomizeSeed = true;
 	[Range(0, 999)]
 	public int seed;
 
@@ -19,8 +19,9 @@ public class SceneryGenerator : MonoBehaviour
 	public bool generateCaves = true;
 	public bool generateFlora = true;
 
-	[Header("Texturing")]
-	public int texturePackID = 0;
+	[Header("Theme")]
+	public bool randomizeTheme = true;
+	public Theme theme = Theme.Spring;
 	public Texture2D[] texturePacks;
 
 	// Class variables
@@ -29,6 +30,15 @@ public class SceneryGenerator : MonoBehaviour
 	private TerrainGenerator terrainGenerator;
 	private CaveGenerator caveGenerator;
 	private FloraGenerator floraGenerator;
+
+	// Themes
+	public enum Theme
+	{
+		Spring,
+		Summer,
+		Fall,
+		Winter
+	}
 
 	// Start is called before the first frame update
 	private void Awake()
@@ -47,18 +57,20 @@ public class SceneryGenerator : MonoBehaviour
 	// Called every frame
 	private void Update()
 	{
+		// Check input for spacebar press to activate a new generation
+		if (Input.GetKeyUp(KeyCode.Space)) generateNew = true;
+
 		// Check if we're meant to generate a new scenery this frame
 		if (generateNew)
 		{
-			// Randomize some stuff
-			if (randomizeProperties)
-			{
-				// Randomize seed
-				RandomizeSeed();
+			// Randomize seed
+			if (randomizeSeed) RandomizeSeed();
 
-				// Get random texture pack
+			// Randomize theme
+			if (randomizeTheme)
+			{
 				Random.InitState(seed);
-				texturePackID = Random.Range(0, texturePacks.Length);
+				theme = (Theme)Random.Range(0, System.Enum.GetValues(typeof(Theme)).Length);
 			}
 
 			// Generate scenery
@@ -81,7 +93,7 @@ public class SceneryGenerator : MonoBehaviour
 		if (generateFlora) floraGenerator.WriteFlora(seed);
 
 		// Apply changes
-		voxelRenderer.Refresh(texturePacks[texturePackID]);
+		voxelRenderer.Refresh(texturePacks[(int)theme]);
 	}
 
 	// Randomize seed

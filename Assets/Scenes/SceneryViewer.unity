@@ -268,6 +268,7 @@ GameObject:
   - component: {fileID: 410087041}
   - component: {fileID: 410087040}
   - component: {fileID: 410087042}
+  - component: {fileID: 410087043}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -372,6 +373,21 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
+--- !u!114 &410087043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410087039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86f85f3b9b68c9a4f9946d1637ef89e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  setting: 0
+  hour: 12
+  cinematicSpeed: 0.005
 --- !u!1 &1712650644
 GameObject:
   m_ObjectHideFlags: 0
@@ -457,12 +473,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generateNew: 1
-  randomizeProperties: 1
+  randomizeSeed: 1
   seed: 0
   generateTerrain: 1
   generateCaves: 1
   generateFlora: 1
-  texturePackID: 0
+  randomizeTheme: 1
+  theme: 0
   texturePacks:
   - {fileID: 2800000, guid: ce480e7eed99d2d418e3ecedd8522e35, type: 3}
   - {fileID: 2800000, guid: a5f2b417c14936d44af85e346aa6f301, type: 3}

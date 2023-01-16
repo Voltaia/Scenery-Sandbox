@@ -32,6 +32,12 @@ public class SunSetter : MonoBehaviour
 	// Updates the sun to the hour
 	private void Update()
 	{
+		// Check input for tab which switches between settings
+		if (Input.GetKeyUp(KeyCode.Tab))
+			if (setting == Setting.RealTime) setting = Setting.Cinematic;
+			else setting = Setting.RealTime;
+
+		// Switch between settings
 		switch (setting)
 		{
 			case Setting.RealTime:
@@ -43,6 +49,7 @@ public class SunSetter : MonoBehaviour
 				break;
 		}
 
+		// Set sun rotation
 		float dayProgress = hour / 24.0f;
 		transform.rotation = Quaternion.Euler((dayProgress * 360) - 90, startRotation.x, startRotation.z);
 	}

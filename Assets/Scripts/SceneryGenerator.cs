@@ -99,8 +99,7 @@ public class SceneryGenerator : MonoBehaviour
 	// Randomize seed
 	private void RandomizeSeed()
 	{
-		// Double randomize seed because for some reason we sometimes get repeating numbers
-		Random.InitState(Random.Range(0, 999));
+		Random.InitState(System.DateTime.Now.Millisecond);
 		seed = Random.Range(0, 999);
 	}
 }

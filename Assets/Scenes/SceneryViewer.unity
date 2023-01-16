@@ -387,7 +387,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   setting: 0
   hour: 12
-  cinematicSpeed: 0.005
+  cinematicSpeed: 1.5
 --- !u!1 &1712650644
 GameObject:
   m_ObjectHideFlags: 0

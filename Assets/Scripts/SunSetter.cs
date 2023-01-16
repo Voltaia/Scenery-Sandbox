@@ -9,7 +9,7 @@ public class SunSetter : MonoBehaviour
 	// Inspector variable
 	public Setting setting = Setting.RealTime;
 	public float hour = 12;
-	public float cinematicSpeed = 0.005f;
+	public float cinematicSpeed = 1.5f;
 
 	// Class variables
 	private Vector3 startRotation;
@@ -45,7 +45,7 @@ public class SunSetter : MonoBehaviour
 				break;
 
 			case Setting.Cinematic:
-				hour = Mathf.Repeat(hour + cinematicSpeed, 24f);
+				hour = Mathf.Repeat(hour + cinematicSpeed * Time.deltaTime, 24f);
 				break;
 		}
 

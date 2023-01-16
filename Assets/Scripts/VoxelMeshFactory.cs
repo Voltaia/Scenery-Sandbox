@@ -10,7 +10,6 @@ public static class VoxelMeshFactory
 	// Static variables
 	private static VoxelTextureData[] s_voxelTexturesData;
 	private static int s_texturesBlockWidth;
-	private static Texture2D s_texture2D;
 	private static Color32[] s_pixels;
 
 	// Voxel corner positions
@@ -66,7 +65,6 @@ public static class VoxelMeshFactory
 	{
 		s_voxelTexturesData = voxelTexturesData;
 		s_texturesBlockWidth = texturesBlockWidth;
-		s_texture2D = texture2D;
 		s_pixels = texture2D.GetPixels32();
 	}
 

@@ -53,6 +53,17 @@ public class MeshData
 		}
 	}
 
+	// Voxel face mappings
+	private static class FaceCorners
+	{
+		public static int[] Left = { 3, 7, 0, 4 };
+		public static int[] Right = { 1, 5, 2, 6 };
+		public static int[] Top = { 4, 7, 5, 6 };
+		public static int[] Bottom = { 3, 0, 2, 1 };
+		public static int[] Front = { 0, 4, 1, 5 };
+		public static int[] Back = { 2, 6, 3, 7 };
+	}
+
 	// Constructor
 	public MeshData()
 	{
@@ -103,4 +114,77 @@ public class MeshData
 			uvStartCoordinates + new Vector2(textureUnit, textureUnit),
 		});
 	}
+
+	// Add a quad to the triangles and vertices
+	public void AddQuad(Vector3Int position, Voxel voxel, VoxelTextureData voxelData, Side side, int size, bool invertFace)
+	{
+		// Set up
+		int vertexStartingIndex = vertices.Count;
+
+		// Get the UV coordinates for each side of the voxel
+		Vector2 uvSideCoordinates = (Vector2)voxelData.sideTextureCoordinates / size;
+		Vector2 uvTopCoordinates = (Vector2)voxelData.topTextureCoordinates / size;
+		Vector2 uvBottomCoordinates = (Vector2)voxelData.bottomTextureCoordinates / size;
+
+		// Placeholder variables
+		int[] faceCorners;
+		Vector2 uvStartCoordinates;
+
+		// Check which side
+		switch (side)
+		{
+			case Side.Left:
+				faceCorners = FaceCorners.Left;
+				uvStartCoordinates = uvSideCoordinates;
+				break;
+
+			case Side.Right:
+				faceCorners = FaceCorners.Right;
+				uvStartCoordinates = uvSideCoordinates;
+				break;
+
+			case Side.Top:
+				faceCorners = FaceCorners.Top;
+				uvStartCoordinates = uvTopCoordinates;
+				break;
+
+			case Side.Bottom:
+				faceCorners = FaceCorners.Bottom;
+				uvStartCoordinates = uvBottomCoordinates;
+				break;
+
+			case Side.Front:
+				faceCorners = FaceCorners.Front;
+				uvStartCoordinates = uvSideCoordinates;
+				break;
+
+			case Side.Back:
+				faceCorners = FaceCorners.Back;
+				uvStartCoordinates = uvSideCoordinates;
+				break;
+
+			default: return;
+		}
+
+		// Add vertices
+		AddQuadVertices(position, voxel.color, faceCorners);
+
+		// Add face
+		AddQuadTriangles(vertexStartingIndex, invertFace);
+
+		// Add UV coordinates
+		float textureUnit = 1.0f / size;
+		AddQuadUVs(uvStartCoordinates, textureUnit);
+	}
+}
+
+// Enum for determining quad side
+public enum Side
+{
+	Left,
+	Right,
+	Top,
+	Bottom,
+	Front,
+	Back
 }

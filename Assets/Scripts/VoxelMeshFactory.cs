@@ -12,28 +12,6 @@ public static class VoxelMeshFactory
 	private static int TexturesBlockWidth;
 	private static Color32[] Pixels;
 
-	// Voxel face mappings
-	private static class FaceCorners
-	{
-		public static int[] Left = { 3, 7, 0, 4 };
-		public static int[] Right = { 1, 5, 2, 6 };
-		public static int[] Top = { 4, 7, 5, 6 };
-		public static int[] Bottom = { 3, 0, 2, 1 };
-		public static int[] Front = { 0, 4, 1, 5 };
-		public static int[] Back = { 2, 6, 3, 7 };
-	}
-
-	// Enum for determining quad side
-	private enum VoxelSide
-	{
-		Left,
-		Right,
-		Top,
-		Bottom,
-		Front,
-		Back
-	}
-
 	// Set up
 	public static void SetTextureData(VoxelTextureData[] voxelTexturesData, int texturesBlockWidth, Texture2D texture2D)
 	{
@@ -161,29 +139,32 @@ public static class VoxelMeshFactory
 		// Get voxel position TEMPORARY REPLACE VECTOR3INTS
 		Vector3Int voxelPosition = new Vector3Int(x, y, z);
 
+		int blockTypeIndex = (int)voxel.type;
+		VoxelTextureData voxelData = VoxelTexturesData[blockTypeIndex];
+
 		// Check left
 		if (CanPlaceQuadInDirection(voxelGrid, x - 1, y, z))
-			AddQuad(meshData, voxelPosition, voxel, VoxelSide.Left, invertFaces);
+			meshData.AddQuad(voxelPosition, voxel, voxelData, Side.Left, TexturesBlockWidth, invertFaces);
 
 		// Check right
 		if (CanPlaceQuadInDirection(voxelGrid, x + 1, y, z))
-			AddQuad(meshData, voxelPosition, voxel, VoxelSide.Right, invertFaces);
+			meshData.AddQuad(voxelPosition, voxel, voxelData, Side.Right, TexturesBlockWidth, invertFaces);
 
 		// Check up
 		if (CanPlaceQuadInDirection(voxelGrid, x, y + 1, z))
-			AddQuad(meshData, voxelPosition, voxel, VoxelSide.Top, invertFaces);
+			meshData.AddQuad(voxelPosition, voxel, voxelData, Side.Top, TexturesBlockWidth, invertFaces);
 
 		// Check down
 		if (CanPlaceQuadInDirection(voxelGrid, x, y - 1, z))
-			AddQuad(meshData, voxelPosition, voxel, VoxelSide.Bottom, invertFaces);
+			meshData.AddQuad(voxelPosition, voxel, voxelData, Side.Bottom, TexturesBlockWidth, invertFaces);
 
 		// Check backwards
 		if (CanPlaceQuadInDirection(voxelGrid, x, y, z - 1))
-			AddQuad(meshData, voxelPosition, voxel, VoxelSide.Front, invertFaces);
+			meshData.AddQuad(voxelPosition, voxel, voxelData, Side.Front, TexturesBlockWidth, invertFaces);
 
 		// Check forwards
 		if (CanPlaceQuadInDirection(voxelGrid, x, y, z + 1))
-			AddQuad(meshData, voxelPosition, voxel, VoxelSide.Back, invertFaces);
+			meshData.AddQuad(voxelPosition, voxel, voxelData, Side.Back, TexturesBlockWidth, invertFaces);
 	}
 
 	// Makes several checks to see if it is okay to place a quad
@@ -201,69 +182,5 @@ public static class VoxelMeshFactory
 			adjacentVoxelData.renderMethod == RenderMethod.Transparent
 			|| adjacentVoxelData.renderMethod == RenderMethod.Decoration;
 		return openAir || adjacentVoxelTransparency;
-	}
-
-	// Add a quad to the triangles and vertices
-	private static void AddQuad(MeshData meshData, Vector3Int position, Voxel voxel, VoxelSide side, bool invertFace)
-	{
-		// Set up
-		int vertexStartingIndex = meshData.vertices.Count;
-
-		// Get the UV coordinates for each side of the voxel
-		int blockTypeIndex = (int)voxel.type;
-		VoxelTextureData voxelData = VoxelTexturesData[blockTypeIndex];
-		Vector2 uvSideCoordinates = (Vector2)voxelData.sideTextureCoordinates / TexturesBlockWidth;
-		Vector2 uvTopCoordinates = (Vector2)voxelData.topTextureCoordinates / TexturesBlockWidth;
-		Vector2 uvBottomCoordinates = (Vector2)voxelData.bottomTextureCoordinates / TexturesBlockWidth;
-
-		// Placeholder variables
-		int[] faceCorners;
-		Vector2 uvStartCoordinates;
-
-		// Check which side
-		switch (side)
-		{
-			case VoxelSide.Left:
-				faceCorners = FaceCorners.Left;
-				uvStartCoordinates = uvSideCoordinates;
-				break;
-
-			case VoxelSide.Right:
-				faceCorners = FaceCorners.Right;
-				uvStartCoordinates = uvSideCoordinates;
-				break;
-
-			case VoxelSide.Top:
-				faceCorners = FaceCorners.Top;
-				uvStartCoordinates = uvTopCoordinates;
-				break;
-
-			case VoxelSide.Bottom:
-				faceCorners = FaceCorners.Bottom;
-				uvStartCoordinates = uvBottomCoordinates;
-				break;
-
-			case VoxelSide.Front:
-				faceCorners = FaceCorners.Front;
-				uvStartCoordinates = uvSideCoordinates;
-				break;
-
-			case VoxelSide.Back:
-				faceCorners = FaceCorners.Back;
-				uvStartCoordinates = uvSideCoordinates;
-				break;
-
-			default: return;
-		}
-
-		// Add vertices
-		meshData.AddQuadVertices(position, voxel.color, faceCorners);
-
-		// Add face
-		meshData.AddQuadTriangles(vertexStartingIndex, invertFace);
-
-		// Add UV coordinates
-		float textureUnit = 1.0f / TexturesBlockWidth;
-		meshData.AddQuadUVs(uvStartCoordinates, textureUnit);
 	}
 }

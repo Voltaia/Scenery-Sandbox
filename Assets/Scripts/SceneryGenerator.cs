@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 // Generates a terrain
 [RequireComponent(typeof(VoxelRenderer))]
@@ -9,7 +10,6 @@ public class SceneryGenerator : MonoBehaviour
 {
 	// Inspector variables
 	[Header("Creation")]
-	public bool generateNew = true;
 	public bool randomizeSeed = true;
 	[Range(0, 999)]
 	public int seed;
@@ -52,38 +52,24 @@ public class SceneryGenerator : MonoBehaviour
 		terrainGenerator = new TerrainGenerator(voxelGrid);
 		caveGenerator = new CaveGenerator(voxelGrid);
 		floraGenerator = new FloraGenerator(voxelGrid);
-	}
 
-	// Called every frame
-	private void Update()
-	{
-		// Check input for spacebar press to activate a new generation
-		if (Input.GetKeyUp(KeyCode.Space)) generateNew = true;
-
-		// Check if we're meant to generate a new scenery this frame
-		if (generateNew)
-		{
-			// Randomize seed
-			if (randomizeSeed) RandomizeSeed();
-
-			// Randomize theme
-			if (randomizeTheme)
-			{
-				Random.InitState(seed);
-				theme = (Theme)Random.Range(0, System.Enum.GetValues(typeof(Theme)).Length);
-			}
-
-			// Generate scenery
-			Generate();
-
-			// Disable for next frame
-			generateNew = false;
-		}
+		// First generation
+		Generate();
 	}
 
 	// Generate a new terrain
 	public void Generate()
 	{
+		// Randomize seed
+		if (randomizeSeed) RandomizeSeed();
+
+		// Randomize theme
+		if (randomizeTheme)
+		{
+			Random.InitState(seed);
+			theme = (Theme)Random.Range(0, System.Enum.GetValues(typeof(Theme)).Length);
+		}
+
 		// Reset voxel grid
 		voxelGrid.NewGrid();
 
@@ -101,5 +87,21 @@ public class SceneryGenerator : MonoBehaviour
 	{
 		Random.InitState(System.DateTime.Now.Millisecond);
 		seed = Random.Range(0, 999);
+	}
+
+	// Editor
+	[CustomEditor(typeof(SceneryGenerator))]
+	private class SceneryGeneratorEditor : Editor
+	{
+		public override void OnInspectorGUI()
+		{
+			base.OnInspectorGUI();
+			bool generateNew = GUILayout.Button("Generate New");
+			if (generateNew)
+			{
+				SceneryGenerator sceneryGenerator = (SceneryGenerator)target;
+				sceneryGenerator.Generate();
+			}
+		}
 	}
 }

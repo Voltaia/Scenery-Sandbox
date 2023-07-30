@@ -8,14 +8,12 @@ using System.Linq;
 public static class VoxelMeshFactory
 {
 	// Static variables
-	private static VoxelTextureData[] VoxelTexturesData;
 	private static int TexturesBlockWidth;
 	private static Color32[] Pixels;
 
 	// Set up
-	public static void SetTextureData(VoxelTextureData[] voxelTexturesData, int texturesBlockWidth, Texture2D texture2D)
+	public static void SetTextureData(int texturesBlockWidth, Texture2D texture2D)
 	{
-		VoxelTexturesData = voxelTexturesData;
 		TexturesBlockWidth = texturesBlockWidth;
 		Pixels = texture2D.GetPixels32();
 	}
@@ -33,10 +31,10 @@ public static class VoxelMeshFactory
 				{
 					// Get the voxel
 					Voxel voxel = voxelGrid.ReadVoxel(x, y, z);
-					VoxelTextureData voxelData = VoxelTexturesData[(int)voxel.type];
+					VoxelTextureData textureData = VoxelRenderer.GetTextureData(voxel.type);
 
 					// Render methods
-					switch (voxelData.renderMethod)
+					switch (textureData.renderMethod)
 					{
 						// Standard
 						case RenderMethod.Standard:
@@ -80,9 +78,9 @@ public static class VoxelMeshFactory
 		VoxelGrid decorationVoxelGrid = new VoxelGrid(textureWidth, textureWidth, textureWidth);
 
 		// Get texture position
-		VoxelTextureData voxelData = VoxelTexturesData[(int)voxel.type];
-		int cursorStartX = voxelData.sideTextureCoordinates.x * textureWidth;
-		int cursorStartY = voxelData.sideTextureCoordinates.y * textureWidth;
+		VoxelTextureData textureData = VoxelRenderer.GetTextureData(voxel.type);
+		int cursorStartX = textureData.sideTextureCoordinates.x * textureWidth;
+		int cursorStartY = textureData.sideTextureCoordinates.y * textureWidth;
 		for (int cursorX = cursorStartX; cursorX < cursorStartX + textureWidth; cursorX++)
 			for (int cursorY = cursorStartY; cursorY < cursorStartY + textureWidth; cursorY++)
 			{
@@ -106,7 +104,7 @@ public static class VoxelMeshFactory
 			}
 
 		// Generate the mesh
-		Mesh decorationMesh = VoxelMeshFactory.GenerateMesh(decorationVoxelGrid);
+		Mesh decorationMesh = GenerateMesh(decorationVoxelGrid);
 
 		// Grab, scale and transform the vertices
 		List<Vector3> decorationVertices = new List<Vector3>();
@@ -140,31 +138,30 @@ public static class VoxelMeshFactory
 		Vector3Int voxelPosition = new Vector3Int(x, y, z);
 
 		int blockTypeIndex = (int)voxel.type;
-		VoxelTextureData voxelData = VoxelTexturesData[blockTypeIndex];
 
 		// Check left
 		if (CanPlaceQuadInDirection(voxelGrid, x - 1, y, z))
-			meshData.AddQuad(voxelPosition, voxel, voxelData, Side.Left, TexturesBlockWidth, invertFaces);
+			meshData.AddQuad(voxelPosition, voxel, Side.Left, TexturesBlockWidth, invertFaces);
 
 		// Check right
 		if (CanPlaceQuadInDirection(voxelGrid, x + 1, y, z))
-			meshData.AddQuad(voxelPosition, voxel, voxelData, Side.Right, TexturesBlockWidth, invertFaces);
+			meshData.AddQuad(voxelPosition, voxel, Side.Right, TexturesBlockWidth, invertFaces);
 
 		// Check up
 		if (CanPlaceQuadInDirection(voxelGrid, x, y + 1, z))
-			meshData.AddQuad(voxelPosition, voxel, voxelData, Side.Top, TexturesBlockWidth, invertFaces);
+			meshData.AddQuad(voxelPosition, voxel, Side.Top, TexturesBlockWidth, invertFaces);
 
 		// Check down
 		if (CanPlaceQuadInDirection(voxelGrid, x, y - 1, z))
-			meshData.AddQuad(voxelPosition, voxel, voxelData, Side.Bottom, TexturesBlockWidth, invertFaces);
+			meshData.AddQuad(voxelPosition, voxel, Side.Bottom, TexturesBlockWidth, invertFaces);
 
 		// Check backwards
 		if (CanPlaceQuadInDirection(voxelGrid, x, y, z - 1))
-			meshData.AddQuad(voxelPosition, voxel, voxelData, Side.Front, TexturesBlockWidth, invertFaces);
+			meshData.AddQuad(voxelPosition, voxel, Side.Front, TexturesBlockWidth, invertFaces);
 
 		// Check forwards
 		if (CanPlaceQuadInDirection(voxelGrid, x, y, z + 1))
-			meshData.AddQuad(voxelPosition, voxel, voxelData, Side.Back, TexturesBlockWidth, invertFaces);
+			meshData.AddQuad(voxelPosition, voxel, Side.Back, TexturesBlockWidth, invertFaces);
 	}
 
 	// Makes several checks to see if it is okay to place a quad
@@ -176,7 +173,7 @@ public static class VoxelMeshFactory
 
 		// Make checks for open air
 		Voxel adjacentVoxel = voxelGrid.ReadVoxel(adjacentX, adjacentY, adjacentZ);
-		VoxelTextureData adjacentVoxelData = VoxelTexturesData[(int)adjacentVoxel.type];
+		VoxelTextureData adjacentVoxelData = VoxelRenderer.GetTextureData(adjacentVoxel.type);
 		bool openAir = adjacentVoxelData.renderMethod == RenderMethod.None;
 		bool adjacentVoxelTransparency =
 			adjacentVoxelData.renderMethod == RenderMethod.Transparent

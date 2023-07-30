@@ -472,7 +472,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 507c8a85c4b3bd549a9ddab7cac134c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  generateNew: 1
   randomizeSeed: 1
   seed: 0
   generateTerrain: 1

@@ -116,15 +116,15 @@ public class MeshData
 	}
 
 	// Add a quad to the triangles and vertices
-	public void AddQuad(Vector3Int position, Voxel voxel, VoxelTextureData voxelData, Side side, int size, bool invertFace)
+	public void AddQuad(Vector3Int position, Voxel voxel, Side side, int size, bool invertFace)
 	{
 		// Set up
 		int vertexStartingIndex = vertices.Count;
 
 		// Get the UV coordinates for each side of the voxel
-		Vector2 uvSideCoordinates = (Vector2)voxelData.sideTextureCoordinates / size;
-		Vector2 uvTopCoordinates = (Vector2)voxelData.topTextureCoordinates / size;
-		Vector2 uvBottomCoordinates = (Vector2)voxelData.bottomTextureCoordinates / size;
+		Vector2 uvSideCoordinates = (Vector2)voxel.textureData.sideTextureCoordinates / size;
+		Vector2 uvTopCoordinates = (Vector2)voxel.textureData.topTextureCoordinates / size;
+		Vector2 uvBottomCoordinates = (Vector2)voxel.textureData.bottomTextureCoordinates / size;
 
 		// Placeholder variables
 		int[] faceCorners;

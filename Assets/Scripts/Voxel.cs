@@ -15,7 +15,7 @@ public enum VoxelType
 	Stone,
 	Leaves,
 	Wood,
-	Rose,
+	Plant,
 }
 
 // A voxel
@@ -23,6 +23,7 @@ public class Voxel
 {
 	// Variables
 	public VoxelType type;
+	public VoxelTextureData textureData;
 	public Color32 color;
 
 	// Constructor for blank
@@ -30,6 +31,7 @@ public class Voxel
 	{
 		type = VoxelType.Air;
 		color = Color.white;
+		textureData = VoxelRenderer.GetTextureData(type);
 	}
 
 	// Constructor for type
@@ -37,6 +39,7 @@ public class Voxel
 	{
 		this.type = type;
 		color = Color.white;
+		textureData = VoxelRenderer.GetTextureData(type);
 	}
 
 	// Constructor for color
@@ -44,5 +47,6 @@ public class Voxel
 	{
 		type = VoxelType.Blank;
 		this.color = color;
+		textureData = VoxelRenderer.GetTextureData(type);
 	}
 }

@@ -53,7 +53,7 @@ public static class VoxelStructures
 				voxelGrid = new VoxelGrid(1, 1, 1);
 
 				// Write flower
-				voxelGrid.WriteVoxel(0, 0, 0, new Voxel(VoxelType.Rose));
+				voxelGrid.WriteVoxel(0, 0, 0, new Voxel(VoxelType.Plant));
 
 				// Return structure
 				return voxelGrid;

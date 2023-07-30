@@ -11,6 +11,7 @@ public class VoxelRenderer : MonoBehaviour
 	public int texturesBlockWidth;
 	public Material material;
 	public VoxelTextureData[] voxelTexturesData;
+	public static VoxelTextureData[] texturesData;
 
 	// Class variables
 	private MeshRenderer meshRenderer;
@@ -19,6 +20,9 @@ public class VoxelRenderer : MonoBehaviour
 	// Start is called before the first frame update
 	private void Awake()
 	{
+		// Set static textures data
+		texturesData = voxelTexturesData;
+
 		// Get components
 		meshRenderer = gameObject.AddComponent<MeshRenderer>();
 		meshRenderer.material = material;
@@ -29,7 +33,13 @@ public class VoxelRenderer : MonoBehaviour
 	public void Refresh(Texture2D texture2D)
 	{
 		material.SetTexture("_Texture2D", texture2D);
-		VoxelMeshFactory.SetTextureData(voxelTexturesData, texturesBlockWidth, texture2D);
+		VoxelMeshFactory.SetTextureData(texturesBlockWidth, texture2D);
 		meshFilter.mesh = VoxelMeshFactory.GenerateMesh(voxelGrid);
+	}
+
+	// Get voxel texture data
+	public static VoxelTextureData GetTextureData(VoxelType voxelType)
+	{
+		return texturesData[(int)voxelType];
 	}
 }

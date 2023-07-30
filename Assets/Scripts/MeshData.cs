@@ -1,6 +1,18 @@
+// Dependencies
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+// Enum for determining quad side
+public enum Side
+{
+	Left,
+	Right,
+	Top,
+	Bottom,
+	Front,
+	Back
+}
 
 // Mesh data
 public class MeshData
@@ -176,15 +188,4 @@ public class MeshData
 		float textureUnit = 1.0f / size;
 		AddQuadUVs(uvStartCoordinates, textureUnit);
 	}
-}
-
-// Enum for determining quad side
-public enum Side
-{
-	Left,
-	Right,
-	Top,
-	Bottom,
-	Front,
-	Back
 }

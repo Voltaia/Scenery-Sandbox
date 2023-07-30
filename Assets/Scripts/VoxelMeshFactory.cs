@@ -63,6 +63,54 @@ public static class VoxelMeshFactory
 		return meshData.Mesh;
 	}
 
+	// Makes several checks to see if it is okay to place a quad
+	private static bool CanPlaceQuadInDirection(VoxelGrid voxelGrid, int adjacentX, int adjacentY, int adjacentZ)
+	{
+		// Check if edge of grid
+		bool edgeOfGrid = voxelGrid.IsOutOfBounds(adjacentX, adjacentY, adjacentZ);
+		if (edgeOfGrid) return true;
+
+		// Make checks for open air
+		Voxel adjacentVoxel = voxelGrid.ReadVoxel(adjacentX, adjacentY, adjacentZ);
+		VoxelTextureData adjacentVoxelData = VoxelRenderer.GetTextureData(adjacentVoxel.type);
+		bool openAir = adjacentVoxelData.renderMethod == RenderMethod.None;
+		bool adjacentVoxelTransparency =
+			adjacentVoxelData.renderMethod == RenderMethod.Transparent
+			|| adjacentVoxelData.renderMethod == RenderMethod.Decoration;
+		return openAir || adjacentVoxelTransparency;
+	}
+
+	// Add a quad cube
+	private static void AddQuadCube(VoxelGrid voxelGrid, MeshData meshData, int x, int y, int z, Voxel voxel, bool invertFaces)
+	{
+		// Get voxel position TEMPORARY REPLACE VECTOR3INTS
+		Vector3Int voxelPosition = new Vector3Int(x, y, z);
+
+		// Check left
+		if (CanPlaceQuadInDirection(voxelGrid, x - 1, y, z))
+			meshData.AddQuad(voxelPosition, voxel, Side.Left, TexturesBlockWidth, invertFaces);
+
+		// Check right
+		if (CanPlaceQuadInDirection(voxelGrid, x + 1, y, z))
+			meshData.AddQuad(voxelPosition, voxel, Side.Right, TexturesBlockWidth, invertFaces);
+
+		// Check up
+		if (CanPlaceQuadInDirection(voxelGrid, x, y + 1, z))
+			meshData.AddQuad(voxelPosition, voxel, Side.Top, TexturesBlockWidth, invertFaces);
+
+		// Check down
+		if (CanPlaceQuadInDirection(voxelGrid, x, y - 1, z))
+			meshData.AddQuad(voxelPosition, voxel, Side.Bottom, TexturesBlockWidth, invertFaces);
+
+		// Check backwards
+		if (CanPlaceQuadInDirection(voxelGrid, x, y, z - 1))
+			meshData.AddQuad(voxelPosition, voxel, Side.Front, TexturesBlockWidth, invertFaces);
+
+		// Check forwards
+		if (CanPlaceQuadInDirection(voxelGrid, x, y, z + 1))
+			meshData.AddQuad(voxelPosition, voxel, Side.Back, TexturesBlockWidth, invertFaces);
+	}
+
 	// Add decoration
 	private static void AddDecoration(MeshData meshData, int x, int y, int z, Voxel voxel)
 	{
@@ -117,67 +165,17 @@ public static class VoxelMeshFactory
 			// Offset accordingly
 			decorationVertices[vertexIndex] += new Vector3(x, y, z);
 		}
-		
+
 		// Grab and offset the triangles
 		List<int> decorationTriangles = new List<int>();
 		decorationTriangles.AddRange(decorationMesh.triangles);
 		for (int triangleIndex = 0; triangleIndex < decorationTriangles.Count; triangleIndex++)
 			decorationTriangles[triangleIndex] += meshData.vertices.Count;
-		
+
 		// Apply the decoration to the mesh
 		meshData.vertices.AddRange(decorationVertices);
 		meshData.triangles.AddRange(decorationTriangles);
 		meshData.uv.AddRange(decorationMesh.uv);
 		meshData.colors32.AddRange(decorationMesh.colors32);
-	}
-
-	// Add a quad cube
-	private static void AddQuadCube(VoxelGrid voxelGrid, MeshData meshData, int x, int y, int z, Voxel voxel, bool invertFaces)
-	{
-		// Get voxel position TEMPORARY REPLACE VECTOR3INTS
-		Vector3Int voxelPosition = new Vector3Int(x, y, z);
-
-		int blockTypeIndex = (int)voxel.type;
-
-		// Check left
-		if (CanPlaceQuadInDirection(voxelGrid, x - 1, y, z))
-			meshData.AddQuad(voxelPosition, voxel, Side.Left, TexturesBlockWidth, invertFaces);
-
-		// Check right
-		if (CanPlaceQuadInDirection(voxelGrid, x + 1, y, z))
-			meshData.AddQuad(voxelPosition, voxel, Side.Right, TexturesBlockWidth, invertFaces);
-
-		// Check up
-		if (CanPlaceQuadInDirection(voxelGrid, x, y + 1, z))
-			meshData.AddQuad(voxelPosition, voxel, Side.Top, TexturesBlockWidth, invertFaces);
-
-		// Check down
-		if (CanPlaceQuadInDirection(voxelGrid, x, y - 1, z))
-			meshData.AddQuad(voxelPosition, voxel, Side.Bottom, TexturesBlockWidth, invertFaces);
-
-		// Check backwards
-		if (CanPlaceQuadInDirection(voxelGrid, x, y, z - 1))
-			meshData.AddQuad(voxelPosition, voxel, Side.Front, TexturesBlockWidth, invertFaces);
-
-		// Check forwards
-		if (CanPlaceQuadInDirection(voxelGrid, x, y, z + 1))
-			meshData.AddQuad(voxelPosition, voxel, Side.Back, TexturesBlockWidth, invertFaces);
-	}
-
-	// Makes several checks to see if it is okay to place a quad
-	private static bool CanPlaceQuadInDirection(VoxelGrid voxelGrid, int adjacentX, int adjacentY, int adjacentZ)
-	{
-		// Check if edge of grid
-		bool edgeOfGrid = voxelGrid.IsOutOfBounds(adjacentX, adjacentY, adjacentZ);
-		if (edgeOfGrid) return true;
-
-		// Make checks for open air
-		Voxel adjacentVoxel = voxelGrid.ReadVoxel(adjacentX, adjacentY, adjacentZ);
-		VoxelTextureData adjacentVoxelData = VoxelRenderer.GetTextureData(adjacentVoxel.type);
-		bool openAir = adjacentVoxelData.renderMethod == RenderMethod.None;
-		bool adjacentVoxelTransparency =
-			adjacentVoxelData.renderMethod == RenderMethod.Transparent
-			|| adjacentVoxelData.renderMethod == RenderMethod.Decoration;
-		return openAir || adjacentVoxelTransparency;
 	}
 }

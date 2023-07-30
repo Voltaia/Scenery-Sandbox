@@ -57,6 +57,12 @@ public class SceneryGenerator : MonoBehaviour
 		Generate();
 	}
 
+	// Called every frame
+	private void Update()
+	{
+		if (Input.GetKey(KeyCode.Space)) Generate();
+	}
+
 	// Generate a new terrain
 	public void Generate()
 	{

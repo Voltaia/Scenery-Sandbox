@@ -19,7 +19,7 @@ public class SunSetter : MonoBehaviour
 	{
 		RealTime,
 		Cinematic,
-		Custom
+		Paused
 	}
 
 	// Start is called before the first frame update
@@ -29,13 +29,13 @@ public class SunSetter : MonoBehaviour
 		startRotation = transform.rotation.eulerAngles;
 	}
 
-	// Updates the sun to the hour
+	// Called every frame
 	private void Update()
 	{
 		// Check input for tab which switches between settings
-		if (Input.GetKeyUp(KeyCode.Tab))
-			if (setting == Setting.RealTime) setting = Setting.Cinematic;
-			else setting = Setting.RealTime;
+		if (Input.GetKeyUp(KeyCode.Space))
+			if (setting == Setting.Cinematic) setting = Setting.Paused;
+			else setting = Setting.Cinematic;
 
 		// Switch between settings
 		switch (setting)
@@ -46,6 +46,11 @@ public class SunSetter : MonoBehaviour
 
 			case Setting.Cinematic:
 				hour = Mathf.Repeat(hour + cinematicSpeed * Time.deltaTime, 24f);
+				break;
+
+			case Setting.Paused:
+				if (Input.GetKeyDown(KeyCode.LeftArrow)) hour--;
+				else if (Input.GetKeyUp(KeyCode.RightArrow)) hour++;
 				break;
 		}
 

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 
 // Orbits around a central point
-public class VoxelRendererOrbit : MonoBehaviour
+public class CameraDrone : MonoBehaviour
 {
 	// Inspector variables
 	public float height;

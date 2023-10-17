@@ -102,6 +102,8 @@ public class SceneryGenerator : MonoBehaviour
 		public override void OnInspectorGUI()
 		{
 			base.OnInspectorGUI();
+			GUILayout.Space(10);
+			GUILayout.Label("Controls", EditorStyles.boldLabel);
 			bool generateNew = GUILayout.Button("Generate New");
 			if (generateNew)
 			{

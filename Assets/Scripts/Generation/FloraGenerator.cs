@@ -49,7 +49,7 @@ public class FloraGenerator
 		List<Vector3Int> forestPositions = GetPlacementPositions(
 			ref clustersPlacements,
 			voxelGrid.width / 2, voxelGrid.length / 2,
-			voxelGrid.surfaceWingspan, forestRadiusAverage + ForestPadding,
+			voxelGrid.diagonalSize, forestRadiusAverage + ForestPadding,
 			false
 		);
 
@@ -65,7 +65,7 @@ public class FloraGenerator
 		List<Vector3Int> flowerPatchPositions = GetPlacementPositions(
 			ref clustersPlacements,
 			voxelGrid.width / 2, voxelGrid.length / 2,
-			voxelGrid.surfaceWingspan, flowerPatchRadiusAverage + FlowerPatchPadding,
+			voxelGrid.diagonalSize, flowerPatchRadiusAverage + FlowerPatchPadding,
 			false
 		);
 

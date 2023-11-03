@@ -37,6 +37,18 @@ public class SunSetter : MonoBehaviour
 			if (setting == Setting.Cinematic) setting = Setting.Paused;
 			else setting = Setting.Cinematic;
 
+		// Move the hour and pause
+		if (Input.GetKeyDown(KeyCode.Comma))
+		{
+			hour--;
+			if (setting == Setting.RealTime) setting = Setting.Paused;
+		}
+		else if (Input.GetKeyUp(KeyCode.Period))
+		{
+			hour++;
+			if (setting == Setting.RealTime) setting = Setting.Paused;
+		}
+
 		// Switch between settings
 		switch (setting)
 		{
@@ -46,11 +58,6 @@ public class SunSetter : MonoBehaviour
 
 			case Setting.Cinematic:
 				hour = Mathf.Repeat(hour + cinematicSpeed * Time.deltaTime, 24f);
-				break;
-
-			case Setting.Paused:
-				if (Input.GetKeyDown(KeyCode.LeftArrow)) hour--;
-				else if (Input.GetKeyUp(KeyCode.RightArrow)) hour++;
 				break;
 		}
 

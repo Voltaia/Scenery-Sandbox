@@ -13,13 +13,14 @@ public class CameraDrone : MonoBehaviour
 	public float orbitAmount;
 	public float orbitSpeed;
 	public float droneSpeed;
-	public float droneRotation;
+	public float droneRotationSpeed;
 
 	// Class variables
 	private VoxelRenderer voxelRenderer;
 	private Vector3 subjectPosition = Vector3.zero;
 	private Setting setting = Setting.Orbit;
 	private Vector3 dronePosition;
+	private Quaternion droneRotation;
 
 	// Setting types
 	public enum Setting
@@ -43,18 +44,20 @@ public class CameraDrone : MonoBehaviour
 	{
 		// Break camera from orbit
 		if (
-			Input.GetKeyDown(KeyCode.W)
+			setting != Setting.Drone
+			&& (Input.GetKeyDown(KeyCode.W)
 			|| Input.GetKeyDown(KeyCode.S)
 			|| Input.GetKeyDown(KeyCode.A)
 			|| Input.GetKeyDown(KeyCode.D)
 			|| Input.GetKeyDown(KeyCode.UpArrow)
 			|| Input.GetKeyDown(KeyCode.DownArrow)
 			|| Input.GetKeyDown(KeyCode.LeftArrow)
-			|| Input.GetKeyDown(KeyCode.RightArrow)
+			|| Input.GetKeyDown(KeyCode.RightArrow))
 		)
 		{
 			setting = Setting.Drone;
 			dronePosition = transform.position;
+			droneRotation = transform.rotation;
 		}
 
 		// Break camera from drone
@@ -92,10 +95,11 @@ public class CameraDrone : MonoBehaviour
 				transform.position = Vector3.Lerp(transform.position, dronePosition, 0.1f);
 
 				// Rotation input
-				if (Input.GetKey(KeyCode.UpArrow)) transform.Rotate(transform.right, -droneRotation * Time.deltaTime, Space.World);
-				if (Input.GetKey(KeyCode.DownArrow)) transform.Rotate(transform.right, droneRotation * Time.deltaTime, Space.World);
-				if (Input.GetKey(KeyCode.RightArrow)) transform.Rotate(Vector3.up, droneRotation * Time.deltaTime, Space.World);
-				if (Input.GetKey(KeyCode.LeftArrow)) transform.Rotate(Vector3.up, -droneRotation * Time.deltaTime, Space.World);
+				if (Input.GetKey(KeyCode.UpArrow)) droneRotation *= Quaternion.Euler(Vector3.left * droneRotationSpeed * Time.deltaTime);
+				if (Input.GetKey(KeyCode.DownArrow)) droneRotation *= Quaternion.Euler(Vector3.right * droneRotationSpeed * Time.deltaTime);
+				if (Input.GetKey(KeyCode.RightArrow)) droneRotation = Quaternion.Euler(Vector3.up * droneRotationSpeed * Time.deltaTime) * droneRotation;
+				if (Input.GetKey(KeyCode.LeftArrow)) droneRotation = Quaternion.Euler(Vector3.down * droneRotationSpeed * Time.deltaTime) * droneRotation;
+				transform.rotation = Quaternion.Lerp(transform.rotation, droneRotation, 0.1f);
 
 				break;
 		}

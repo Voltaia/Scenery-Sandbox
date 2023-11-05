@@ -381,7 +381,7 @@ MonoBehaviour:
   orbitAmount: 0.5
   orbitSpeed: 0.1
   droneSpeed: 15
-  droneRotation: 40
+  droneRotationSpeed: 80
 --- !u!114 &330585549
 MonoBehaviour:
   m_ObjectHideFlags: 0

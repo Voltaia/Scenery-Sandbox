@@ -95,6 +95,7 @@ public class SceneryGenerator : MonoBehaviour
 		seed = Random.Range(0, 999);
 	}
 
+#if UNITY_EDITOR
 	// Editor
 	[CustomEditor(typeof(SceneryGenerator))]
 	private class SceneryGeneratorEditor : Editor
@@ -112,4 +113,5 @@ public class SceneryGenerator : MonoBehaviour
 			}
 		}
 	}
+#endif
 }
